@@ -1,0 +1,88 @@
+import Footer from "@/components/gust/Footer";
+import Header from "@/components/gust/Header";
+import LOginimag from "../assets/grow.png";
+import React, { useState } from "react";
+import "../app.css";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Load from "@/components/ui/Load";
+import { useDispatch, useSelector } from "react-redux";
+
+import { toast } from "sonner";
+
+const Login = () => {
+  const [user, setUser] = useState({ email: "", password: "" });
+  const { loading } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      dispatch(LoginUser(user)).then((result) => {
+        toast(result.payload.message, {
+          style: { background: '#333', color: '#fff' }
+        })
+      });
+      console.log(user)
+  };
+
+  return (
+    <section className=" ">
+      <Header />
+      <div className="flex justify-between items-center text-[var(--parent4)] ">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white ml-34 magicpattern p-5 h-100  shadow-lg rounded-2xl w-[300px]"
+        >
+          <h2 className="text-2xl font-bold mb-16 text-center ">Login</h2>
+          <input
+            type="email"
+            placeholder="Email"
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            className="w-full p-2 mb-4 border rounded"
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={user.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
+            className="w-full p-2 mb-4 border rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full flex items-center justify-center  text-[var(--two5m)] font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-[var(--two2m)]"
+            disabled={loading}
+          >
+            {loading ? <Load/>: "Login"}
+          </button>
+          <p>___________________________or___________________________</p>
+          <button
+           
+            className="w-full flex items-center justify-center  text-[var(--two5m)] font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-white shadow-black shadow"
+          
+          >
+            
+          </button>
+
+          <p className="mt-10 text-center">
+            have't An account ?{" "}
+            <Link to="/auth/signup" className="text-blue-400">
+              Sign Up
+            </Link>
+            <br />
+            <Link className="text-[var(--two3m)] m-3">Forgot Password</Link>
+          </p>
+        </form>
+        <div>
+          <img src={LOginimag} alt="LOginimag" className="w-[90%] shadow-lg rounded-2xl h-[700px]" />
+        </div>
+      </div>
+      <Footer />
+    </section>
+  );
+};
+
+export default Login;
