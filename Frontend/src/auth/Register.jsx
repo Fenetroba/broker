@@ -4,9 +4,11 @@ import Footer from "@/components/gust/Footer";
 import { Link } from "react-router-dom";
 import axios from "../lib/Axios";
 import { useDispatch, useSelector } from "react-redux";
-
+import LOginimag from "../assets/grow.png";
 import Load from "@/components/ui/Load";
 import { toast } from "sonner"
+import { register } from "@/store/AuthSlice";
+import { FaGoogle } from "react-icons/fa";
 
 const Register = () => {
   const [user, setUser] = useState({ name: "", email: "", password: "" });
@@ -20,21 +22,21 @@ const Register = () => {
     e.preventDefault();
     
 
-    // dispatch(register(user)).then((result) => {
-    //   toast(result.payload.message, {
-    //     style: { background: '#333', color: '#fff' }
-    //   })
-    // });
+    dispatch(register(user)).then((result) => {
+      toast(result.payload.message, {
+        style: { background: '#333', color: '#fff' }
+      })
+    });
 
   };
 
   return (
-    <section className="magicpattern">
+    <section className="">
       <Header />
-      <div className="flex flex-col items-center text-[var(--parent4)] justify-center min-h-screen ">
+      <div className="flex sm:flex-row items-center text-[var(--parent4)] justify-evenly min-h-screen ">
         <form
           onSubmit={handleSubmit}
-          className="bg-[var(--parent2)] p-5 h-100 shadow-lg rounded-2xl w-[300px]"
+          className="bg-white max-sm:mt-10 sm:ml-34 magicpattern sm:w-[30%] p-5 h-100  shadow-lg rounded-2xl"
         >
           <h2 className="text-2xl font-bold mb-10 text-center ">Register</h2>
           <input
@@ -63,11 +65,19 @@ const Register = () => {
           />
           <button
             type="submit"
-            className="w-full flex items-center justify-center text-[var(--parent1)] font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-[var(--parent3)]"
+            className="w-full flex items-center justify-center text-[var(--two5m)] font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-[var(--two2m)]"
             disabled={loading}
           >
             {loading ? <Load/> : "Register"}
           </button>
+           
+          <p
+           
+            className="justify-evenly mt-3.5 w-full flex items-center   font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-white shadow-black shadow"
+          
+          >
+            <span><FaGoogle/></span><span>Continue with Google</span>
+          </p>
           {message && (
             <p className="mt-4 text-center text-red-500">{message}</p>
           )}
@@ -78,7 +88,11 @@ const Register = () => {
             </Link>
           </p>
         </form>
+        <div>
+          <img src={LOginimag} alt="LOginimag" className="sm:w-[90%] max:mt-10 shadow-lg  rounded-2xl sm:h-[700px]" />
+        </div>
       </div>
+      
       <Footer />
     </section>
   );

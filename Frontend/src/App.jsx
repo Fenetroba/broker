@@ -10,18 +10,18 @@ import { Children, useEffect } from "react";
 
 import PageProtector from "./components/check_page/PageProtector";
 import ContactUs from "./components/gust/contactUs";
+import { checkAuth } from "./store/AuthSlice";
 
 function App() {
-  const isAuthenticated= false
-  const user= null
-  // const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
-  // console.log("auth", isAuthenticated, user);
 
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  //   console.log("auth", isAuthenticated);
-  // }, []);
+  const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
+  console.log("auth", isAuthenticated, user);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(checkAuth());
+    console.log("auth", isAuthenticated);
+  }, []);
 
   const Location = useLocation();
   console.log(Location.pathname);
@@ -46,18 +46,9 @@ function App() {
 
         {/* parent Page  */}
 
-        <Route
-          path="/parent"
-          element={
-            <PageProtector isAuthenticated={isAuthenticated} user={user}>
-              {/* <ParentLayer /> */}
-            </PageProtector>
-          }
-        >
-          {/* <Route path="home" element={<ParentHome />} /> */}
-          {/* <Route path="controllers" element={<ChildControllers />} /> */}
+      
         
-        </Route>
+
       </Routes>
     </div>
   );

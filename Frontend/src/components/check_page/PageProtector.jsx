@@ -6,7 +6,7 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
   // Allow unauthenticated users to access login and register pages
   if (
     !isAuthenticated &&
-    (location.pathname === "/auth/login" || location.pathname === "/auth/register")
+    (location.pathname === "/auth/login" || location.pathname === "/auth/signup")
   ) {
     return <>{children}</>;
   }
@@ -27,19 +27,13 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
   }
 
   // Role-based route protection (optional, for extra security)
-  if (user?.role === "parent" && location.pathname.startsWith("/parent")) {
-    return <>{children}</>;
-  }
-  if (user?.role === "child" && location.pathname.startsWith("/child")) {
-    return <>{children}</>;
-  }
+
   if (user?.role === "admin" && location.pathname.startsWith("/admin")) {
     return <>{children}</>;
   }
 
   // If role doesn't match the route, redirect to their home
-  if (user?.role === "parent") return <Navigate to="/parent/home" />;
-  if (user?.role === "child") return <Navigate to="/child/home" />;
+
   return <Navigate to="/admin/home" />;
 };
 

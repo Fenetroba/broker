@@ -1,6 +1,7 @@
 import Footer from "@/components/gust/Footer";
 import Header from "@/components/gust/Header";
 import LOginimag from "../assets/grow.png";
+import {FaGoogle} from 'react-icons/fa'
 import React, { useState } from "react";
 import "../app.css";
 import { Link } from "react-router-dom";
@@ -28,10 +29,10 @@ const Login = () => {
   return (
     <section className=" ">
       <Header />
-      <div className="flex justify-between items-center text-[var(--parent4)] ">
+      <div className="flex max-md:flex-col justify-between items-center text-[var(--parent4)] ">
         <form
           onSubmit={handleSubmit}
-          className="bg-white ml-34 magicpattern p-5 h-100  shadow-lg rounded-2xl w-[300px]"
+          className="bg-white max-sm:mt-10 sm:ml-34 magicpattern sm:w-[30%] p-5 h-100  shadow-lg rounded-2xl"
         >
           <h2 className="text-2xl font-bold mb-16 text-center ">Login</h2>
           <input
@@ -58,14 +59,14 @@ const Login = () => {
           >
             {loading ? <Load/>: "Login"}
           </button>
-          <p>___________________________or___________________________</p>
-          <button
+        
+          <p
            
-            className="w-full flex items-center justify-center  text-[var(--two5m)] font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-white shadow-black shadow"
+            className="justify-evenly mt-3.5 w-full flex items-center   font-bold cursor-pointer rounded-2xl py-2 roundedtransition bg-white shadow-black shadow"
           
           >
-            
-          </button>
+            <span><FaGoogle/></span><span>Continue with Google</span>
+          </p>
 
           <p className="mt-10 text-center">
             have't An account ?{" "}
@@ -77,7 +78,7 @@ const Login = () => {
           </p>
         </form>
         <div>
-          <img src={LOginimag} alt="LOginimag" className="w-[90%] shadow-lg rounded-2xl h-[700px]" />
+          <img src={LOginimag} alt="LOginimag" className="sm:w-[90%] max:mt-10 shadow-lg  rounded-2xl sm:h-[700px]" />
         </div>
       </div>
       <Footer />
