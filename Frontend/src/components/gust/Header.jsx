@@ -23,7 +23,7 @@ const ParentPage = [
   },
   {
     pageName: "Contact Us",
-    Url: "/contact",
+    Url: "/contactus",
     id: 3,
   },
   {

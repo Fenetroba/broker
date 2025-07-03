@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import Header from './Header';
 
 // import { sendMessage } from '../../redux/features/messageSlice'; // Uncomment and adjust path if you have this action
 
@@ -67,14 +68,14 @@ const ContactUs = () => {
                   <Mail className="w-6 h-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-gray-600">support@cosmetics.com</p>
+                    <p className="text-gray-600">support@FasionLink.com</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
                   <Phone className="w-6 h-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-medium text-gray-900">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <p className="text-gray-600">+251900000000000000</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
@@ -82,9 +83,8 @@ const ContactUs = () => {
                   <div>
                     <h3 className="font-medium text-gray-900">Address</h3>
                     <p className="text-gray-600">
-                      123 Beauty Street<br />
-                      New York, NY 10001<br />
-                      United States
+                      batu<br />
+                  
                     </p>
                   </div>
                 </div>
@@ -156,15 +156,12 @@ const ContactUs = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full bg-[var(--two2m)] text-white hover:bg-black"
                   disabled={loading}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
+                    
                       Sending...
                     </span>
                   ) : (

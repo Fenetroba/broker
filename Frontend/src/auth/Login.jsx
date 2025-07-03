@@ -29,7 +29,7 @@ const Login = () => {
   return (
     <section className=" ">
       <Header />
-      <div className="flex max-md:flex-col justify-between items-center text-[var(--parent4)] ">
+      <div className="flex max-md:flex-col justify-evenly items-center text-[var(--parent4)] ">
         <form
           onSubmit={handleSubmit}
           className="bg-white max-sm:mt-10 sm:ml-34 magicpattern sm:w-[30%] p-5 h-100  shadow-lg rounded-2xl"
@@ -78,7 +78,7 @@ const Login = () => {
           </p>
         </form>
         <div>
-          <img src={LOginimag} alt="LOginimag" className="sm:w-[90%] max:mt-10 shadow-lg  rounded-2xl sm:h-[700px]" />
+          <img src={LOginimag} alt="LOginimag" className="sm:w-[100%] max:mt-10 shadow-lg  rounded-2xl sm:h-[500px]" />
         </div>
       </div>
       <Footer />

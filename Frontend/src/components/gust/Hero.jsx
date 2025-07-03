@@ -43,9 +43,9 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative h-[600px] overflow-hidden rounded-lg sm:h-[550px] mt-1.5">
+    <div className="relative h-[200px] overflow-hidden rounded-lg sm:h-[550px] mt-1.5">
     {/* Carousel slides */}
-    <div className="relative h-full">
+    <div className="relative sm:h-full">
       {carouselItems.map((item, index) => (
         <div
         
