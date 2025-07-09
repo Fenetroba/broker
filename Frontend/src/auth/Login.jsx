@@ -10,6 +10,7 @@ import Load from "@/components/ui/Load";
 import { useDispatch, useSelector } from "react-redux";
 
 import { toast } from "sonner";
+import { LoginUser } from "@/store/AuthSlice";
 
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
@@ -78,7 +79,7 @@ const Login = () => {
           </p>
         </form>
         <div>
-          <img src={LOginimag} alt="LOginimag" className="sm:w-[100%] max:mt-10 shadow-lg  rounded-2xl sm:h-[500px]" />
+          <img src={LOginimag} alt="LOginimag" className="sm:w-[100%] max:mt-10 shadow-lg  rounded-2xl sm:h-[600px]" />
         </div>
       </div>
       <Footer />

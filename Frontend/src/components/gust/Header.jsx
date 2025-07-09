@@ -1,10 +1,5 @@
 import React, { useState } from "react";
 import Logo from "../../assets/Logo.png";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Menu, User, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
@@ -45,7 +40,7 @@ const Header = () => {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
-    <header className="sticky top-0 w-full z-40 bg-[var(--two3m)] shadow">
+    <header className="sticky top-0 w-full z-40 bg-[var(--two3m)] shadow mb-6">
       <div className="max-w-7xl mx-auto flex justify-between items-center ">
         {/* Logo */}
         <Link to="/" className="flex items-center">
@@ -65,18 +60,15 @@ const Header = () => {
         </nav>
         {/* Desktop Login Button */}
         <div className="hidden md:flex items-center space-x-2">
-          <Button className="bg-[var(--parent1)] shadow-lg text-[var(--parent4)]  text-[16px] hover:bg-[var(--parent2)] px-6 py-2">
+          <Button className="bg-[var(--two2m)] shadow-lg text-[var(--two4m)]  text-[16px] hover:bg-green-900 px-6 py-2 rounded-2xl">
             <Link to="/auth/login">Login</Link>
           </Button>
-          <Button className="text-white cursor-pointer shadow-lg w-20">
-            <Tooltip>
-              <TooltipTrigger>
+          <Button className="text-black cursor-pointer shadow-lg w-20 bg-[var(--two5m)] rounded-[3px] hover:bg-gray-200">
+            
                 <User fontSize={32} />
-              </TooltipTrigger>
-              <TooltipContent className='bg-[var(--two2m)] rounded-2xl text-white'>
-                Users
-              </TooltipContent>
-            </Tooltip>
+              
+      
+             
           </Button>
         </div>
         {/* Mobile Hamburger */}

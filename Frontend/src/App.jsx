@@ -9,8 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Children, useEffect } from "react";
 
 import PageProtector from "./components/check_page/PageProtector";
-import ContactUs from "./components/gust/contactUs";
+import ContactUs from "./pages/gust/contactUs";
 import { checkAuth } from "./store/AuthSlice";
+import LocalLayer from "./layer/LocalLayer";
+import Local_shop_Home from "./pages/LocalShoper/Home";
 
 function App() {
 
@@ -44,7 +46,15 @@ function App() {
           <Route path="signup" element={<Register />} />
         </Route>
 
-        {/* parent Page  */}
+        {/* local shoper Page  */}
+
+        <Route path="/local_shop" element={<PageProtector isAuthenticated={isAuthenticated} user={user}>
+
+          <LocalLayer/>
+        </PageProtector>}>
+        <Route path="home" element={<Local_shop_Home/>}/>
+       
+        </Route>
 
       
         

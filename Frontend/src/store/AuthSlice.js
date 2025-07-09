@@ -12,7 +12,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/users/register', userData);
+      const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (err) {
       console.log(err)
@@ -24,7 +24,7 @@ export const LoginUser = createAsyncThunk(
   'auth/Login',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/users/login', userData);
+      const response = await api.post('/auth/login', userData);
       return response.data;
     } catch (err) {
     
@@ -37,7 +37,7 @@ export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/users/check_auth'); // or your auth-check endpoint
+      const response = await api.get('/auth/check_auth'); // or your auth-check endpoint
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: 'Not authenticated' });
@@ -49,7 +49,7 @@ export const LogOut=createAsyncThunk(
   'auth/logout',
   async(_,{rejectWithValue})=>{
     try{
-      const response=await api.post('/users/logout');
+      const response=await api.post('/auth/logout');
       return response.data;
     }catch(err){
       return rejectWithValue(err.response?.data || { message: 'Logout Fall' });

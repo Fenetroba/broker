@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import { toast } from 'sonner';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import Header from './Header';
+import Header from '../../components/gust/Header';
 
 // import { sendMessage } from '../../redux/features/messageSlice'; // Uncomment and adjust path if you have this action
 
