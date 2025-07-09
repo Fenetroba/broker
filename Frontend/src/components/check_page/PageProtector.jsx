@@ -13,13 +13,23 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
 
   // Redirect unauthenticated users to login for all other routes
   if (!isAuthenticated) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth/login"  />;
   }
 
-  // Authenticated users: prevent access to login/register, redirect based on role
+ if(isAuthenticated && (location.pathname.includes("/auth/login") || (location.pathname.includes("auth/signup")) )){
+  return <Navigate to="/" />;
 
+ }
 
-  // Role-based route protection (optional, for extra security)
+ if(isAuthenticated && user.role=== 'admin'){
+  return <Navigate to=''/>
+ }
+ if(isAuthenticated && user.role=== 'CityShop'){
+  return <Navigate to=''/>
+ }
+ if(isAuthenticated && user.role=== 'CityShop'){
+  return <Navigate to=''/>
+ }
 
     return <>{children}</>;
 

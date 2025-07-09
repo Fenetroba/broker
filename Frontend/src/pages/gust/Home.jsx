@@ -14,7 +14,7 @@ import {
 
 import React from "react";
 
-const Home = () => {
+const Home = ({isAuthenticated ,user}) => {
   return (
     <div>
       <div className="">
@@ -29,7 +29,7 @@ const Home = () => {
             </SelectContent>
           </Select>
         </div>
-        <Header />
+        <Header isAuthenticated={isAuthenticated} user={user}/>
         <Hero />
         <HowToWork/>
         <WhyChooseUs/>

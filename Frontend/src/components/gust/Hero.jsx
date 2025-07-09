@@ -49,7 +49,7 @@ const Hero = () => {
       {carouselItems.map((item, index) => (
         <div
         
-          key={item.id}
+          key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentSlide
               ? "opacity-100"

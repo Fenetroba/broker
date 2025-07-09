@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Logo from "../../assets/Logo.png";
 import { Menu, User, X } from "lucide-react";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { LogOut } from "@/store/AuthSlice";
 
 const ParentPage = [
   {
@@ -28,7 +30,7 @@ const ParentPage = [
   },
 ];
 
-const Header = () => {
+const Header = ({isAuthenticated,user}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -36,7 +38,10 @@ const Header = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle("darkP");
   };
-
+const dispatch=useDispatch()
+  const LogoutHandler=()=>[
+    dispatch(LogOut())
+  ]
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
@@ -61,15 +66,34 @@ const Header = () => {
         {/* Desktop Login Button */}
         <div className="hidden md:flex items-center space-x-2">
           <Button className="bg-[var(--two2m)] shadow-lg text-[var(--two4m)]  text-[16px] hover:bg-green-900 px-6 py-2 rounded-2xl">
-            <Link to="/auth/login">Login</Link>
+          {
+                isAuthenticated ? <p  onClick={LogoutHandler}>
+                LogOut
+              </p>:
+               <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
+               Login
+             </Link>
+               }
+               
           </Button>
-          <Button className="text-black cursor-pointer shadow-lg w-20 bg-[var(--two5m)] rounded-[3px] hover:bg-gray-200">
-            
-                <User fontSize={32} />
-              
+          {/* the use profile */}
+    {
+      isAuthenticated ?       <Link to='/user/profile'>
+      <Button className="text-black cursor-pointer shadow-lg w-20 bg-[var(--two5m)] rounded-[3px] hover:bg-gray-200">
+        
+           <User fontSize={32} />
+         
+      </Button>
+      </Link>:
+        <Link to='/auth/login'>
+        <Button className="text-black cursor-pointer shadow-lg w-20 bg-[var(--two5m)] rounded-[3px] hover:bg-gray-200">
+          
+             <User fontSize={32} />
+           
+        </Button>
+        </Link>
       
-             
-          </Button>
+    }
         </div>
         {/* Mobile Hamburger */}
         <button
@@ -109,9 +133,15 @@ const Header = () => {
                 </Link>
               ))}
               <Button className="bg-[var(--two2m)] text-white rounded-2xl text-[16px] hover:bg-[#4ea017] px-6 py-2 mt-2 w-full">
-                <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
-                  Login
-                </Link>
+               {
+                isAuthenticated ? <p  onClick={LogoutHandler}>
+                LogOut
+              </p>:
+               <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
+               Login
+             </Link>
+               }
+               
               </Button>
             </div>
           </motion.nav>

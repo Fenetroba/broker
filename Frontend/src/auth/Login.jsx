@@ -4,7 +4,7 @@ import LOginimag from "../assets/grow.png";
 import {FaGoogle} from 'react-icons/fa'
 import React, { useState } from "react";
 import "../app.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Load from "@/components/ui/Load";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +24,8 @@ const Login = () => {
           style: { background: '#333', color: '#fff' }
         })
       });
-      console.log(user)
+  
+    
   };
 
   return (
