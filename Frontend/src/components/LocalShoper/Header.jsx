@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Coins, Home, Inbox, ListOrdered, Search, Settings } from "lucide-react";
 
 import {
   SidebarProvider,
@@ -27,19 +27,24 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Calendar",
+    title: "My Products",
     url: "#",
     icon: Calendar,
   },
   {
-    title: "Search",
+    title: "Orders",
     url: "#",
-    icon: Search,
+    icon: ListOrdered,
   },
   {
     title: "Settings",
     url: "#",
     icon: Settings,
+  },
+  {
+    title: "Earnings",
+    url: "#",
+    icon: Coins,
   },
 ];
 const Header = () => {
