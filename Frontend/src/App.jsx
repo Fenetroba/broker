@@ -26,8 +26,11 @@ import CityHome from "./pages/CityShope/CityHome";
 import AdminLayer from "./layer/AdminLayer";
 import AdminHome from "./pages/Admin/AdminHome";
 import Nofound from "./pages/Nofound/Nofound";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import Header from "./components/LocalShoper/Header";
 
-function App() {
+
+function App({children}) {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
   console.log("auth", isAuthenticated, user);
 
@@ -41,8 +44,10 @@ function App() {
   console.log(Location.pathname);
 
   return (
-    <div className="">
+
+<div className="">
       <Toaster />
+
       <Routes>
         <Route
           path="/"
@@ -114,6 +119,9 @@ function App() {
         {/* No found */}
         <Route path="*" element={<Nofound />} />
       </Routes>
+
+
+  
     </div>
   );
 }

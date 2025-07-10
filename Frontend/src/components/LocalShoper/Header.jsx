@@ -1,9 +1,74 @@
-import React from 'react'
+import React from "react";
+import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+
+} from "@/components/ui/sidebar";
+
+// Menu items.
+const items = [
+  {
+    title: "Home",
+    url: "/local_shop/home",
+    icon: Home,
+  },
+  {
+    title: "Inbox",
+    url: "#",
+    icon: Inbox,
+  },
+  {
+    title: "Calendar",
+    url: "#",
+    icon: Calendar,
+  },
+  {
+    title: "Search",
+    url: "#",
+    icon: Search,
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+  },
+];
 const Header = () => {
   return (
-    <div>Header</div>
-  )
-}
 
-export default Header
+      
+      <Sidebar >
+        <SidebarContent className='bg-[var(--two5m)] '>
+          <SidebarGroup>
+            <SidebarGroupLabel className='font-bold text-2xl mb-3.5 text-[var(--two2m)]'>LOCAL SHOPER</SidebarGroupLabel>
+            <SidebarGroupContent >
+              <SidebarMenu >
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild className='hover:bg-[var(--two4m)]'>
+                      <a href={item.url} >
+                        <item.icon  /> 
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+
+  );
+};
+
+export default Header;

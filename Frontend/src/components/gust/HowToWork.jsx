@@ -43,7 +43,7 @@ const item = {
 
 const HowToWork = () => {
   return (
-    <section className="w-full py-16 bg-gradient-to-br from-[var(--parent1)]/10 to-[var(--parent4)]/10 rounded-3xl shadow-xl mt-10">
+    <section className="w-full py-16 bg-gradient-to-br from-[var(--parent1)]/10 to-[var(--parent4)]/10 rounded-3xl mt-10">
       <div className="max-w-5xl mx-auto px-4">
         <motion.h2
           initial={{ opacity: 0, y: -30 }}
