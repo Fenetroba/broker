@@ -1,5 +1,5 @@
 import React from "react";
-import { Building2, Calendar, Coins, Home, Inbox, ListOrdered, Search, Settings } from "lucide-react";
+import { Building2, Calendar, Coins, Home, Inbox, ListOrdered, Search, Settings, TowerControl, User } from "lucide-react";
 
 import {
   SidebarProvider,
@@ -28,14 +28,14 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Find Products",
+    title: "Products",
     url: "#",
     icon: Calendar,
   },
   {
-    title: "My Orders",
+    title: "Users",
     url: "#",
-    icon: ListOrdered,
+    icon: User,
   },
   {
     title: "Settings",
@@ -51,7 +51,7 @@ const Header = () => {
     <Sidebar >
     <SidebarContent className='bg-[var(--two2m)] '>
       <SidebarGroup>
-        <SidebarGroupLabel className='font-bold text-2xl mb-3.5 text-[var(--two5m)]'>CITY SHOP <Building2  className="ml-2 text-green-100" /></SidebarGroupLabel>
+        <SidebarGroupLabel className='font-bold text-3xl mb-3.5 text-[var(--two5m)]'>ADMIN<TowerControl  className="ml-2 text-green-100"/></SidebarGroupLabel>
         <SidebarGroupContent >
           <SidebarMenu >
             {items.map((item) => (

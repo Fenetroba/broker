@@ -79,7 +79,16 @@ export const Login = async (req, res) => {
       const { accessToken, refreshToken } = generateTokens(user._id);
       // Set cookies in the correct order
       setCookies(res, accessToken, refreshToken);
-      return res.status(200).json({ success: true, message: "Login Successful" });
+      return res.status(200).json({ 
+        success: true, 
+        message: "Login Successful",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      });
     } else {
       return res.status(400).json({ success: false, message: "Incorrect Password or Email" });
     }
@@ -123,22 +132,71 @@ export const getProfile = async (req, res) => {
 export const refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
+    
     if (!refreshToken) {
-      return res.status(401).json({ message: "No refresh token provided" });
+      return res.status(401).json({ 
+        success: false,
+        message: "No refresh token provided" 
+      });
     }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    // You may want to check the refresh token in your DB or cache here
-    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({ 
+          success: false,
+          message: "Refresh token expired" 
+        });
+      }
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid refresh token" 
+      });
+    }
+
+    // Verify user still exists
+    const user = await AuthUser.findById(decoded.userId).select("-password");
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+
+    // Generate new access token
+    const accessToken = jwt.sign(
+      { userId: decoded.userId }, 
+      process.env.ACCESS_TOKEN_SECRET, 
+      { expiresIn: "15m" }
+    );
+
+    // Set new access token cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
-    res.json({ message: "Token refreshed successfully" });
+
+    res.json({ 
+      success: true,
+      message: "Token refreshed successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
     console.log("Error in refreshToken controller", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Server error", 
+      error: error.message 
+    });
   }
 };
 

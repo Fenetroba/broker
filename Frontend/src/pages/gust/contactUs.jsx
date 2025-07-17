@@ -51,7 +51,7 @@ const ContactUs = () => {
   return (
     <section>
       <Header />
-      <div className="min-h-screen bg-primary/5 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--two5m)] to-[var(--parent4)]  py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Contact Us</h1>
@@ -61,7 +61,7 @@ const ContactUs = () => {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Contact Information */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="bg-white  rounded-lg shadow-lg p-8">
               <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">

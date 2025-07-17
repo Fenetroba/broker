@@ -4,12 +4,20 @@ import { Navigate, useLocation } from "react-router-dom";
 const roleRedirects = {
   admin: "/admin/home",
   CityShop: "/city_shop/home",
-  LocalShop: "/local_shop/home",
+  LocalShop: "/local_shop/home", // Fixed: removed extra space
   // Add more roles and paths as needed
 };
 
 const PageProtector = ({ isAuthenticated, children, user }) => {
   const location = useLocation();
+
+  console.log("PageProtector Debug:", {
+    isAuthenticated,
+    user,
+    currentPath: location.pathname,
+    userRole: user?.role,
+    roleRedirect: user?.role ? roleRedirects[user.role] : null
+  });
 
   // Allow unauthenticated users to access login and register pages
   if (

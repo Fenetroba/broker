@@ -2,9 +2,9 @@ import Footer from "@/components/gust/Footer";
 import Header from "@/components/gust/Header";
 import LOginimag from "../assets/grow.png";
 import {FaGoogle} from 'react-icons/fa'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../app.css";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Load from "@/components/ui/Load";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,18 +14,57 @@ import { LoginUser } from "@/store/AuthSlice";
 
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
-  const { loading } = useSelector((state) => state.auth);
-
+  const { loading, isAuthenticated, user: authUser, error } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Handle successful login and redirect
+  useEffect(() => {
+    if (isAuthenticated && authUser) {
+      console.log("Login successful, user:", authUser);
+      
+      // Redirect based on user role
+      switch (authUser.role) {
+        case 'admin':
+          navigate('/admin/home');
+          break;
+        case 'LocalShop':
+          navigate('/local_shop/home');
+          break;
+        case 'CityShop':
+          navigate('/city_shop/home');
+          break;
+        default:
+          navigate('/');
+          break;
+      }
+    }
+  }, [isAuthenticated, authUser, navigate]);
+
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      dispatch(LoginUser(user)).then((result) => {
-        toast(result.payload.message, {
-          style: { background: '#333', color: '#fff' }
-        })
-      });
-  
+    e.preventDefault();
     
+    try {
+      const result = await dispatch(LoginUser(user)).unwrap();
+      
+      if (result.success) {
+        toast.success(result.message || "Login successful!", {
+          style: { background: '#10B981', color: '#fff' }
+        });
+        
+        // Clear form
+        setUser({ email: "", password: "" });
+      } else {
+        toast.error(result.message || "Login failed", {
+          style: { background: '#EF4444', color: '#fff' }
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(error.message || "Login failed", {
+        style: { background: '#EF4444', color: '#fff' }
+      });
+    }
   };
 
   return (
@@ -34,7 +73,7 @@ const Login = () => {
       <div className="flex max-md:flex-col justify-evenly items-center text-[var(--parent4)] ">
         <form
           onSubmit={handleSubmit}
-          className="bg-white max-sm:mt-10 sm:ml-34 magicpattern sm:w-[30%] p-5 h-100  shadow-lg rounded-2xl"
+          className="bg-white max-sm:mt-10 sm:ml-34 magicpattern w-[30%] max-sm:w-[70%]  max-md:w-[70%]  p-5 h-100  shadow-lg rounded-2xl"
         >
           <h2 className="text-2xl font-bold mb-16 text-center ">Login</h2>
           <input

@@ -20,18 +20,18 @@ import { Button } from "../ui/button";
 const Hero = () => {
   return (
   <section>
-      <div className="shadow flex justify-between items-center pr-10">
+      <div className=" shadow flex justify-between items-center pr-10">
       <div>
         <Link to="/local_shop/home" className="flex items-center">
-          <img src={Logo} alt="Logo" className="w-48 h-14 object-contain" />
+          <img src={Logo} alt="Logo" className=" -mb-5 w-48 h-24 object-contain" />
         </Link>
       </div>
       <div>
-        <DropdownMenu>
+        <DropdownMenu >
             
           <Tooltip>
           <DropdownMenuTrigger asChild>
-  <TooltipTrigger><User/></TooltipTrigger>
+  <TooltipTrigger className=' cursor-pointer bg-green-200 p-2 rounded-full'><User/></TooltipTrigger>
   
   </DropdownMenuTrigger>
   <TooltipContent className='bg-[var(--two2m)] rounded-2xl text-white'>
@@ -42,12 +42,12 @@ const Hero = () => {
           <DropdownMenuContent className="border-0 shadow rounded-2xl bg-[var(--two5m)]">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
+            <DropdownMenuItem  className=' cursor-pointer'><Link to='/user/profile'>Profile</Link> </DropdownMenuItem>
+            <DropdownMenuItem  className=' cursor-pointer'>Billing</DropdownMenuItem>
             <DropdownMenuItem  className='  '>
               <Button className='cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900'>Log Out </Button>
             </DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            <DropdownMenuItem  className=' cursor-pointer'>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

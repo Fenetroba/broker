@@ -43,7 +43,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative h-[200px] overflow-hidden rounded-lg sm:h-[550px] mt-1.5">
+    <div className="relative h-[50vh] overflow-hidden rounded-lg sm:h-[550px] mt-1.5">
     {/* Carousel slides */}
     <div className="relative sm:h-full">
       {carouselItems.map((item, index) => (
@@ -59,7 +59,7 @@ const Hero = () => {
           {/* Background image */}
           <div className="relative h-full w-full">
           
-              <img src={item.src} alt={`Slide ${index + 1}`}    className='cover p-4 text-center w-full ' />
+              <img src={item.src} alt={`Slide ${index + 1}`}    className='cover p-4 text-center w-full max-sm:h-[50vh] max-sm:w-[760px]' />
             
            
           </div>

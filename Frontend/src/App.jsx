@@ -27,11 +27,20 @@ import AdminLayer from "./layer/AdminLayer";
 import AdminHome from "./pages/Admin/AdminHome";
 import Nofound from "./pages/Nofound/Nofound";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import Header from "./components/LocalShoper/Header";
+import Header from "./components/LocalShoper/Sidebar";
+import MyProduct from "./pages/LocalShoper/MyProduct";
+import About from "./pages/gust/AboutUs";
+import How_To_Work from "./pages/gust/How_To_Work";
+import Orders from "./pages/LocalShoper/Orders";
+import Earnings from "./pages/LocalShoper/Earnings";
+import Inbox from "./pages/LocalShoper/Inbox";
+import Settings from "./pages/LocalShoper/Settings";
+import EditProfile from "./pages/AllUser_Profile/EditProfile";
 
 
 function App({children}) {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
+
   console.log("auth", isAuthenticated, user);
 
   const dispatch = useDispatch();
@@ -54,6 +63,8 @@ function App({children}) {
           element={<Home isAuthenticated={isAuthenticated} user={user} />}
         />
         <Route path="contactus" element={<ContactUs />} />
+        <Route path="about" element={<About />} />
+        <Route path="how-to-work" element={<How_To_Work />} />
         <Route
           path="/auth"
           element={
@@ -76,7 +87,12 @@ function App({children}) {
             </PageProtector>
           }
         >
-          <Route path="home" element={<Local_shop_Home />} />
+          <Route path="home" element={<Local_shop_Home  isAuthenticated={isAuthenticated} user={user}/>} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="earning" element={<Earnings />} />
+          <Route path="inbox" element={<Inbox />} />
+          <Route path="setting" element={<Settings />} />
+          <Route path="my_product" element={<MyProduct />} />
         </Route>
 
         {/* city shoper Page  */}
@@ -114,6 +130,7 @@ function App({children}) {
           }
         >
           <Route path="profile" element={<Profile />} />
+          <Route path="profile-edit" element={<EditProfile />} />
         </Route>
 
         {/* No found */}

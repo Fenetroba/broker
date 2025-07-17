@@ -40,10 +40,10 @@ const Register = () => {
   return (
     <section className="">
       <Header />
-      <div className="flex max-md:flex-col justify-evenly items-center m-3">
+      <div className="flex max-md:flex-col max-md:m-flex:none max-sm:m-7 justify-evenly items-center m-3">
         <form
           onSubmit={handleSubmit}
-          className="bg-white max-sm:mt-10 sm:ml-34 magicpattern sm:w-[30%] p-5 h-100  shadow-lg rounded-2xl"
+          className=" max-sm:mt-10 sm:ml-34 magicpattern w-[30%] max-sm:w-[100%]  max-md:w-[70%]   p-5 h-100  shadow-lg rounded-2xl"
         >
           <h2 className="text-2xl font-bold mb-10 text-center ">Register</h2>
           <input
@@ -70,11 +70,11 @@ const Register = () => {
             className="w-full p-2 mb-4 border rounded"
             required
           />
-          <div className="mb-6 p-4  bg-[var(--two2m)]/90 rounded-xl shadow flex flex-col items-center ">
+          <div className="mb-6 p-4  bg-[var(--two2m)]/90 rounded-xl shadow flex flex-col items-center">
             <label className="block mb-3 font-bold text-[16px] text-[var(--two4m)]">
               Select Seller Type:
             </label>
-            <div className="flex  gap-2 w-full justify-center">
+            <div className="flex  gap-2 w-full justify-center max-sm:flex-col">
               <label
                 className={`flex items-center gap-3 px-4 cursor-pointer transition-all duration-200 rounded-2xl ${
                   user.role === "LocalShop"

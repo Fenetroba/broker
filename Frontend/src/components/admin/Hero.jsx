@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
-import BannerCity from '../../assets/cityBanner.png'
+// import BannerCity from '../../assets/cityBanner.png'
 import {
   Tooltip,
   TooltipContent,
@@ -54,9 +54,9 @@ const Hero = () => {
     </div>
  
     {/* city shoper Banner */}
-    <div className="mt-4">
-      <img src={BannerCity} alt="BannerCity" className="cover sm:h-[50vh] w-full max-sm:h-[30vh]"/>
-    </div>
+    {/* <div className="mt-4">
+      <img src={BannerCity} alt="BannerCity" />
+    </div> */}
   </section>
   );
 };

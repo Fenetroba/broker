@@ -65,7 +65,7 @@ const dispatch=useDispatch()
         </nav>
         {/* Desktop Login Button */}
         <div className="hidden md:flex items-center space-x-2">
-          <Button className="bg-[var(--two2m)] shadow-lg text-[var(--two4m)]  text-[16px] hover:bg-green-900 px-6 py-2 rounded-2xl">
+          <Button className="bg-[var(--two2m)] shadow-lg text-[var(--two5m)]  text-[16px] hover:bg-green-900 px-6 py-2 rounded-2xl">
           {
                 isAuthenticated ? <p  onClick={LogoutHandler}>
                 LogOut
@@ -112,21 +112,27 @@ const dispatch=useDispatch()
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 h-full w-full  bg-[var(--two5m)] shadow-2xl z-50 flex flex-col px-6 py-8 md:hidden"
+            className="fixed top-0 left-0  h-full w-full  bg-[var(--two5m)] shadow-2xl z-50 flex flex-col px-6 py-8 md:hidden"
           >
+        <div className="flex items-center justify-center  gap-52 ">
+        <Link to="/" className="flex items-center">
+          <img src={Logo} alt="Logo" className="w-48 h-34 object-contain" />
+        </Link>
             <button
-              className="self-end mb-8 p-2 rounded-full hover:bg-[var(--parent1)]/10"
+              className="self-endp-2 mb-40 rounded-full hover:bg-[var(--parent1)]/10"
               onClick={toggleMenu}
               aria-label="Close menu"
             >
               <X className="w-7 h-7" />
             </button>
+        </div>
+            
             <div className="flex flex-col gap-4 mt-2">
               {ParentPage.map((Page) => (
                 <Link
                   key={Page.id}
                   to={Page.Url}
-                  className="py-3 px-2 rounded-lg font-bold text-[16px] hover:text-[#62c022] transition-colors"
+                  className="py-3 px-2 rounded-lg font-bold  shadow text-[16px] hover:text-[#62c022] transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   {Page.pageName}
