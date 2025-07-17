@@ -20,7 +20,7 @@ import {
 const items = [
   {
     title: "Home",
-    url: "/local_shop/home",
+    url: "/local_shop",
     icon: Home,
   },
   {
@@ -51,6 +51,12 @@ const items = [
 
 ];
 const Header = ({isAuthenticated ,user}) => {
+  // Function to truncate email to 10 characters
+  const truncateEmail = (email) => {
+    if (!email) return '';
+    return email.length > 10 ? email.substring(0, 10) + '...' : email;
+  };
+
   return (
     <Sidebar >
       <SidebarContent className='bg-[var(--two2m)] '>
@@ -79,8 +85,8 @@ const Header = ({isAuthenticated ,user}) => {
         <div className="absolute w-full bottom-0 bg-[var(--two5m)] flex items-center justify-around rounded-t-2xl p-4">
          <div className="w-20 h-20 bg-amber-100 rounded-full"></div>
          <div className="text-[14px]">
-          <p><strong>Name</strong> : fenet roba</p>
-          <p><strong>Email</strong> :fenetroba700@</p>
+          <p><strong>Name</strong> : {user?.name || 'N/A'}</p>
+          <p><strong>Email</strong> : {truncateEmail(user?.email)}</p>
          </div>
         </div>
       </SidebarContent>

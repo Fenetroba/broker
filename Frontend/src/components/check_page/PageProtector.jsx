@@ -4,9 +4,22 @@ import { Navigate, useLocation } from "react-router-dom";
 const roleRedirects = {
   admin: "/admin/home",
   CityShop: "/city_shop/home",
-  LocalShop: "/local_shop/home", // Fixed: removed extra space
+  LocalShop: "/local_shop/home",
   // Add more roles and paths as needed
 };
+
+// Pages that all authenticated users can access
+const allowedPages = [
+  "/user/profile",
+  "/user/profile-edit",
+  "/auth/login",
+  "/auth/signup",
+  "/local_shop/inbox",
+  "/local_shop/my_product",
+  "/local_shop/order",
+  "/local_shop/setting",
+  "/local_shop/earning",
+];
 
 const PageProtector = ({ isAuthenticated, children, user }) => {
   const location = useLocation();
@@ -32,6 +45,11 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
     return <Navigate to="/auth/login" />;
   }
 
+  // Allow authenticated users to access allowed pages (like profile)
+  if (isAuthenticated && allowedPages.some(page => location.pathname.startsWith(page))) {
+    return <>{children}</>;
+  }
+
   // Redirect authenticated users away from login/signup
   if (
     isAuthenticated &&
@@ -44,15 +62,22 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
     return <Navigate to="/" />;
   }
 
-  // Redirect authenticated users to their home page based on role
-  if (isAuthenticated && user && user.role && roleRedirects[user.role]) {
-    // If already on the correct home page, render children
-    if (location.pathname === roleRedirects[user.role]) {
+  // For role-specific pages, check if user has access
+  if (isAuthenticated && user && user.role) {
+    const userHomePath = roleRedirects[user.role];
+    
+    // If user is trying to access their own role's pages, allow it
+    if (userHomePath && location.pathname.startsWith(userHomePath)) {
       return <>{children}</>;
     }
-    // If on a different protected page, redirect to their home
-    if (!location.pathname.startsWith(roleRedirects[user.role])) {
-      return <Navigate to={roleRedirects[user.role]} />;
+    
+    // If user is trying to access a different role's pages, redirect to their home
+    if (userHomePath && !location.pathname.startsWith(userHomePath)) {
+      // Check if it's a general page that all users can access
+      const isGeneralPage = allowedPages.some(page => location.pathname.startsWith(page));
+      if (!isGeneralPage) {
+        return <Navigate to={userHomePath} />;
+      }
     }
   }
 
