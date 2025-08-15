@@ -26,7 +26,6 @@ import CityHome from "./pages/CityShope/CityHome";
 import AdminLayer from "./layer/AdminLayer";
 import AdminHome from "./pages/Admin/AdminHome";
 import Nofound from "./pages/Nofound/Nofound";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import Header from "./components/LocalShoper/Sidebar";
 import MyProduct from "./pages/LocalShoper/MyProduct";
 import About from "./pages/gust/AboutUs";
@@ -36,12 +35,15 @@ import Earnings from "./pages/LocalShoper/Earnings";
 import Inbox from "./pages/LocalShoper/Inbox";
 import Settings from "./pages/LocalShoper/Settings";
 import EditProfile from "./pages/AllUser_Profile/EditProfile";
+import ProductListPage from "./pages/LocalShoper/ProductListPage";
 
 
 function App({children}) {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
-
-  console.log("auth", isAuthenticated, user);
+ 
+// const user="city_shop";
+// const isAuthenticated=true
+//   console.log("auth", isAuthenticated, user);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -93,6 +95,7 @@ function App({children}) {
           <Route path="inbox" element={<Inbox />} />
           <Route path="setting" element={<Settings />} />
           <Route path="my_product" element={<MyProduct />} />
+          <Route path="product-list" element={<ProductListPage />} />
         </Route>
 
         {/* city shoper Page  */}

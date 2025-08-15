@@ -7,6 +7,10 @@ const initialState = {
   loading: false,
   error: null,
   isLoading: false, // For auth loading state
+  // City Shop users listing
+  cityShopUsers: [],
+  cityShopLoading: false,
+  cityShopError: null,
 };
 
 export const register = createAsyncThunk(
@@ -81,6 +85,33 @@ export const LogOut = createAsyncThunk(
   }
 );
 
+export const GetVerifyedUser = createAsyncThunk(
+  'auth/getVerifyedUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/auth/get-verifyed-user');
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: 'GetVerifyedUser failed' });
+    }
+  }
+);
+
+// Fetch users by role: city_shop
+export const fetchCityShopUsers = createAsyncThunk(
+  'auth/fetchCityShopUsers',
+  async (_, { rejectWithValue }) => {
+    try {
+      // EXPECTED backend route: GET /auth/users?role=city_shop (adjust if different)
+      const { data } = await api.get('/auth/users', { params: { role: 'CityShop' } });
+      // Accept either { users: [...] } or { data: [...] }
+      return data?.users || data?.data || [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: 'Failed to fetch City Shop users' });
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -111,7 +142,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = action.payload?.message || 'Registration failed';
       })
-      
+
       // Login cases
       .addCase(LoginUser.pending, (state) => {
         state.loading = true;
@@ -129,7 +160,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = action.payload?.message || 'Login failed';
       })
-      
+
       // Logout cases
       .addCase(LogOut.pending, (state) => {
         state.loading = true;
@@ -147,7 +178,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = action.payload?.message || 'Logout failed';
       })
-      
+
       // CheckAuth cases
       .addCase(checkAuth.pending, (state) => {
         state.isLoading = true;
@@ -165,7 +196,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = action.payload?.message || 'Not authenticated';
       })
-      
+
       // Refresh token cases
       .addCase(Refresh_token.pending, (state) => {
         state.loading = true;
@@ -181,9 +212,28 @@ export const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.error = action.payload?.message || 'Token refresh failed';
+      })
+
+      // City Shop Users list
+      .addCase(fetchCityShopUsers.pending, (state) => {
+        state.cityShopLoading = true;
+        state.cityShopError = null;
+      })
+      .addCase(fetchCityShopUsers.fulfilled, (state, action) => {
+        state.cityShopLoading = false;
+        state.cityShopUsers = action.payload || [];
+      })
+      .addCase(fetchCityShopUsers.rejected, (state, action) => {
+        state.cityShopLoading = false;
+        state.cityShopError = action.payload?.message || action.error?.message || 'Failed to fetch City Shop users';
       });
   },
 });
 
 export const { clearError, setLoading } = authSlice.actions;
 export default authSlice.reducer;
+
+// Selectors
+export const selectCityShopUsers = (state) => state.auth?.cityShopUsers || [];
+export const selectCityShopLoading = (state) => state.auth?.cityShopLoading || false;
+export const selectCityShopError = (state) => state.auth?.cityShopError || null;

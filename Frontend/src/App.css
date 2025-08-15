@@ -11,9 +11,9 @@
    /* From Uiverse.io by chase2k25 */ 
 /* From Uiverse.io by bociKond */ 
 .loader {
-  width: 20.8px;
-  height: 20.8px;
-  color: #e0f5dd;
+  width: 10.8px;
+  height: 17.8px;
+  color: #fcfcfc;
   position: relative;
   background: radial-gradient(6.2px,currentColor 94%,#0000);
 }

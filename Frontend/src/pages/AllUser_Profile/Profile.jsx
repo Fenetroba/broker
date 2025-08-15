@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import National_Id from '../../assets/cityBanner.png'
 
 const sampleUser = {
   avatar: "https://randomuser.me/api/portraits/men/32.jpg",
@@ -17,6 +18,7 @@ const sampleUser = {
   email: "john.doe@example.com",
   role: "customer",
   fullName: "John Doe",
+
   phone: "+1 555-123-4567",
   location: "San Francisco, CA",
   createdAt: "2023-01-15T10:00:00Z",
@@ -80,6 +82,13 @@ const Profile = () => {
                     Location
                   </h3>
                   <p className="mt-1">{sampleUser.location}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500">
+                    National Id
+                  </h3>
+          
+                  <img className="mt-1 w-50 " src={National_Id} alt="national id" />
                 </div>
               </CardContent>
             </Card>

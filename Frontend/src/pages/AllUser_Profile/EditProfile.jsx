@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { Camera, User, Mail, Phone, MapPin } from "lucide-react";
+import { Camera, User, Mail, Phone, MapPin, IdCard, Building, Globe, List } from "lucide-react";
 
 const sampleUser = {
   avatar: "https://randomuser.me/api/portraits/men/32.jpg",
@@ -85,7 +85,7 @@ const EditProfile = () => {
                       id="fullName"
                       type="text"
                       defaultValue={sampleUser.fullName}
-                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                      className="rounded-xl border-gray-400 focus:border-green-200 focus:ring-green-100 h-12"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -100,7 +100,7 @@ const EditProfile = () => {
                       id="username"
                       type="text"
                       defaultValue={sampleUser.username}
-                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
                       placeholder="Enter your username"
                     />
                   </div>
@@ -115,12 +115,13 @@ const EditProfile = () => {
                       id="email"
                       type="email"
                       defaultValue={sampleUser.email}
-                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
                       placeholder="Enter your email"
                     />
                   </div>
 
                   {/* Phone */}
+                 
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <Phone className="h-4 w-4" />
@@ -130,11 +131,65 @@ const EditProfile = () => {
                       id="phone"
                       type="text"
                       defaultValue={sampleUser.phone}
-                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
                       placeholder="Enter your phone number"
                     />
                   </div>
-
+                  {/*              Company Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      Company Name
+                    </Label>
+                    <Input
+                      id="Company_Name"
+                      type="text"
+                      defaultValue=""
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      placeholder="Enter your Company Name (Optional)"
+                    />
+                  </div>
+                  {/*  Company Website Link */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Company Website Link <p className="font-bold">(Optional)</p>
+                    </Label>
+                    <Input
+                      id="Company_Name"
+                      type="text"
+                      defaultValue=""
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      placeholder="Enter your Company Website Link (Optional)"
+                    />
+                  </div>
+                  {/*  Business Registration Number */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                     Business Registration Number <p className="font-bold">(Optional)</p>
+                    </Label>
+                    <Input
+                      id="Company_Name"
+                      type="number"
+                      defaultValue=""
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      placeholder=""
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                   Task Licence <p className="font-bold">(Optional)</p>
+                    </Label>
+                    <Input
+                      id="Company_Name"
+                      type="file"
+                      defaultValue=""
+                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      placeholder=""
+                    />
+                  </div>
                   {/* Location */}
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="location" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -145,6 +200,19 @@ const EditProfile = () => {
                       id="location"
                       type="text"
                       defaultValue={sampleUser.location}
+                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                      placeholder="Enter your location"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="location" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <IdCard className="h-4 w-4" />
+                      National Id
+                    </Label>
+                    <Input
+                      id="National_id"
+                      type="file"
+                    
                       className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
                       placeholder="Enter your location"
                     />

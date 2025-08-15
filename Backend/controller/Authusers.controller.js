@@ -200,3 +200,87 @@ export const refreshToken = async (req, res) => {
   }
 };
 
+export const GetVerifyedUser=async(req,res)=>{
+  try {
+    const user=await AuthUser.findById(req.user.id).select("-password");
+    if(!user){
+      return res.status(404).json({success:false,message:"User not found"});
+    }
+    return res.status(200).json({success:true,message:"User found",user});  
+    
+  } catch (error) {
+    console.log("Error in GetVerifyedUser controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+// List users by role (defaults to city_shop) with optional search and pagination
+export const fetchCityShopUsers = async (req, res) => {
+  try {
+    const {
+      role = 'CityShop',
+      q = '',
+      page = 1,
+      limit = 20,
+    } = req.query;
+
+    // Build case-insensitive role patterns to support variants like CityShop, city_shop, city-shop, etc.
+    const rolePatterns = [
+      new RegExp(`^${role}$`, 'i'),
+      /^city[_\s-]?shop$/i,
+    ];
+
+    // Support different field names that might be used to store role/type (case-insensitive)
+    const roleFilter = {
+      $or: [
+        { role: { $in: rolePatterns } },
+        { userType: { $in: rolePatterns } },
+        { UserType: { $in: rolePatterns } },
+      ],
+    };
+
+    const searchFilter = q
+      ? {
+          $or: [
+            { name: { $regex: q, $options: 'i' } },
+            { email: { $regex: q, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const filter = { ...roleFilter, ...searchFilter };
+
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    const [users, totalResults] = await Promise.all([
+      AuthUser.find(filter)
+        .select('-password')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum),
+      AuthUser.countDocuments(filter),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+      pagination: {
+        currentPage: pageNum,
+        totalPages: Math.ceil(totalResults / limitNum),
+        totalResults,
+        hasNext: skip + users.length < totalResults,
+        hasPrev: pageNum > 1,
+      },
+    });
+  } catch (error) {
+    console.log('Error in fetchCityShopUsers controller', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+};
+
