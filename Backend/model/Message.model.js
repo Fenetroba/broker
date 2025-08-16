@@ -13,14 +13,14 @@ const messageSchema = new mongoose.Schema({
   // Sender (user who sent the message)
   sender: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'AuthUser',
+    ref: 'User',
     required: true
   },
   
   // Receiver (user who receives the message)
   receiver: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'AuthUser',
+    ref: 'User',
     required: true
   },
   

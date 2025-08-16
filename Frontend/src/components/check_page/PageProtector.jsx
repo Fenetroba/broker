@@ -24,13 +24,6 @@ const allowedPages = [
 const PageProtector = ({ isAuthenticated, children, user }) => {
   const location = useLocation();
 
-  console.log("PageProtector Debug:", {
-    isAuthenticated,
-    user,
-    currentPath: location.pathname,
-    userRole: user?.role,
-    roleRedirect: user?.role ? roleRedirects[user.role] : null
-  });
 
   // Allow unauthenticated users to access login and register pages
   if (

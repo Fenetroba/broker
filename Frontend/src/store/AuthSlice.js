@@ -11,6 +11,10 @@ const initialState = {
   cityShopUsers: [],
   cityShopLoading: false,
   cityShopError: null,
+
+  // Chat-related selections
+  selectedFriendId: null,
+  selectedFriend: null,
 };
 
 export const register = createAsyncThunk(
@@ -112,10 +116,22 @@ export const fetchCityShopUsers = createAsyncThunk(
   }
 );
 
+
+
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setSelectedUserId: (state, action) => {
+      state.selectedFriendId = action.payload;
+    },
+    // Prefer setting the whole user object when available
+    setSelectedUser: (state, action) => {
+      const user = action.payload || null;
+      state.selectedFriend = user;
+      state.selectedFriendId = user?._id || user?.id || null;
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -230,7 +246,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { clearError, setLoading } = authSlice.actions;
+export const { clearError, setLoading, setSelectedUserId, setSelectedUser } = authSlice.actions;
 export default authSlice.reducer;
 
 // Selectors

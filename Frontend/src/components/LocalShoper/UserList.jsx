@@ -4,14 +4,16 @@ import {
   fetchCityShopUsers,
   selectCityShopUsers,
   selectCityShopLoading,
-  selectCityShopError
+  selectCityShopError,
+  setSelectedUser
 } from '../../store/AuthSlice';
 
 const UserList = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectCityShopUsers);
-  const loading = useSelector(selectCityShopLoading);
+  const loading = useSelector(selectCityShopLoading); 
   const error = useSelector(selectCityShopError);
+  const selectedFriendId = useSelector((s) => s.auth?.selectedFriendId || null);
 
   const [query, setQuery] = useState('');
 
@@ -43,8 +45,14 @@ const UserList = () => {
 
       <div  className="flex flex-col max-h-[60vh] overflow-auto divide-y divide-gray-100 bg-white rounded-md">
         {(filtered || []).map((u) => {
+          const uid = u?._id || u?.id;
+          const isActive = selectedFriendId && uid && String(selectedFriendId) === String(uid);
           return (
-            <div onClick={()=>console.log(u)} key={u?._id || u?.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 transition">
+            <div 
+              onClick={()=>dispatch(setSelectedUser(u))}
+              key={uid} 
+              className={`flex items-center gap-3 p-3 hover:bg-gray-50 transition cursor-pointer ${isActive ? 'bg-blue-50' : ''}`}
+            >
               <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700">
                 {(u?.name || u?.email || 'U').slice(0,1).toUpperCase()}
               </div>

@@ -7,9 +7,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import Hero from '@/components/LocalShoper/Hero'
 
 const Local_shop_Home = ({children,  isAuthenticated ,user}) => {
-  useEffect(() => {
-    console.log("Local_shop_Home component mounted");
-  }, []);
+ 
 
   return (
    <div className=" relative overflow-hidden">

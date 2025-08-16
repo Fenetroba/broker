@@ -21,7 +21,7 @@ const Login = () => {
   // Handle successful login and redirect
   useEffect(() => {
     if (isAuthenticated && authUser) {
-      console.log("Login successful, user:", authUser);
+
       
       // Redirect based on user role
       switch (authUser.role) {

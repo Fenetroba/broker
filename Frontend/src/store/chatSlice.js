@@ -1,109 +1,154 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../lib/Axios';
 
+// Initial state
 const initialState = {
-  conversations: [],
-  currentConversation: null,
-  messages: [],
+  chats: [],         // List of users with recent messages
+  currentChat: null, // Currently selected user to chat with
+  messages: [],      // Messages in current chat
   loading: false,
   error: null,
   unreadCount: 0
 };
 
+/**
+ * Fetches recent chats for the logged-in user
+ */
+export const fetchRecentChats = createAsyncThunk(
+  'chat/fetchRecentChats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/chat/chats');
+      return response.data?.data?.chats || [];
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to load recent chats');
+    }
+  }
+);
+
+/**
+ * Fetches messages between the current user and another user
+ */
+export const fetchDirectMessages = createAsyncThunk(
+  'chat/fetchDirectMessages',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/chat/messages/user/${userId}`);
+      return response.data?.data || [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || 'Failed to fetch messages');
+    }
+  }
+);
+
+// Send a message to a specific user
+export const sendDirectMessage = createAsyncThunk(
+  'chat/sendDirectMessage',
+  async ({ recipientId, content }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post('/chat/message', { 
+        receiverId: recipientId, 
+        content 
+      });
+      return data?.data || data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || 'Failed to send message');
+    }
+  }
+);
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    // Set loading state
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-
-    // Set error
-    setError: (state, action) => {
-      state.error = action.payload;
-      state.loading = false;
-    },
-
-    // Set conversations list
-    setConversations: (state, action) => {
-      state.conversations = action.payload;
-      state.loading = false;
-    },
-
-    // Add a new conversation
-    addConversation: (state, action) => {
-      state.conversations.unshift(action.payload);
-    },
-
-    // Set current conversation
-    setCurrentConversation: (state, action) => {
-      state.currentConversation = action.payload;
-    },
-
-    // Set messages for current conversation
-    setMessages: (state, action) => {
-      state.messages = action.payload;
-      state.loading = false;
-    },
-
-    // Add a new message
+    // Add a new message to current chat
     addMessage: (state, action) => {
-      state.messages.push(action.payload);
+      state.messages.unshift(action.payload);
       
-      // Update conversation's last message
-      if (state.currentConversation) {
-        const conversationIndex = state.conversations.findIndex(
-          conv => conv._id === state.currentConversation._id
-        );
-        if (conversationIndex !== -1) {
-          state.conversations[conversationIndex].lastMessage = action.payload;
-          state.conversations[conversationIndex].lastMessageAt = new Date().toISOString();
+      // Update last message in chats list
+      if (state.currentChat) {
+        const chat = state.chats.find(c => c._id === action.payload.sender._id || 
+                                        c._id === action.payload.receiver._id);
+        if (chat) {
+          chat.lastMessage = action.payload;
         }
       }
     },
-
-    // Update a message (edit)
-    updateMessage: (state, action) => {
-      const { messageId, content } = action.payload;
-      const messageIndex = state.messages.findIndex(msg => msg._id === messageId);
-      if (messageIndex !== -1) {
-        state.messages[messageIndex].content = content;
+    
+    // Set current active chat
+    setCurrentChat: (state, action) => {
+      state.currentChat = action.payload;
+      // Mark messages as read when opening a chat
+      if (action.payload) {
+        state.messages.forEach(msg => {
+          if (msg.sender._id === action.payload._id && !msg.isRead) {
+            msg.isRead = true;
+          }
+        });
       }
     },
-
-    // Delete a message
-    deleteMessage: (state, action) => {
-      const messageId = action.payload;
-      state.messages = state.messages.filter(msg => msg._id !== messageId);
-    },
-
-    // Set unread count
-    setUnreadCount: (state, action) => {
-      state.unreadCount = action.payload;
-    },
-
+    
     // Clear chat state
     clearChat: (state) => {
-      state.conversations = [];
-      state.currentConversation = null;
-      state.messages = [];
-      state.unreadCount = 0;
-      state.error = null;
+      Object.assign(state, initialState);
     }
+  }
+  ,
+  extraReducers: (builder) => {
+    // Handle fetch recent chats
+    builder.addCase(fetchRecentChats.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    
+    builder.addCase(fetchRecentChats.fulfilled, (state, action) => {
+      state.chats = action.payload || [];
+      state.loading = false;
+    });
+    
+    builder.addCase(fetchRecentChats.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to load recent chats';
+    });
+    
+    // Handle fetch direct messages
+    builder.addCase(fetchDirectMessages.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    
+    builder.addCase(fetchDirectMessages.fulfilled, (state, action) => {
+      state.messages = action.payload || [];
+      state.loading = false;
+    });
+    
+    builder.addCase(fetchDirectMessages.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to load messages';
+    });
+    
+    // Handle send direct message
+    builder.addCase(sendDirectMessage.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.messages.unshift(action.payload);
+        
+        // Update last message in chats
+        const otherUserId = action.payload.receiver._id === state.currentChat?._id ? 
+          action.payload.sender._id : action.payload.receiver._id;
+          
+        const chat = state.chats.find(c => c._id === otherUserId);
+        if (chat) {
+          chat.lastMessage = action.payload;
+        }
+      }
+    });
   }
 });
 
+// Export actions
 export const {
-  setLoading,
-  setError,
-  setConversations,
-  addConversation,
-  setCurrentConversation,
-  setMessages,
   addMessage,
-  updateMessage,
-  deleteMessage,
-  setUnreadCount,
+  setCurrentChat,
   clearChat
 } = chatSlice.actions;
 

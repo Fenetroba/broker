@@ -15,6 +15,7 @@ import {
 import UserList from '@/components/LocalShoper/UserList';
 import { SpaceIcon } from 'lucide-react';
 import MainChat from '@/components/LocalShoper/MainChat';
+import RightSide_FullInfo from '@/components/LocalShoper/RightSide_FullInfo';
 const Inbox = () => {
   return (
     <div className=' relative overflow-hidden'>
@@ -22,7 +23,7 @@ const Inbox = () => {
 
      <SidebarProvider className='reletive'>
     <Sidebar >
-    <SidebarTrigger className='absolute left-[270px]' />
+    <SidebarTrigger className='absolute top-1 left-65 z-10' />
       <SidebarContent className='bg-[var(--two2m)] '>
         <SidebarGroup>
           <SidebarGroupLabel className='font-bold text-2xl mb-3.5 text-[var(--two5m)]'>My Custemers</SidebarGroupLabel>
@@ -50,6 +51,7 @@ const Inbox = () => {
       <MainChat/>
       </div>
     </div>
+    <RightSide_FullInfo/>
     </SidebarProvider>
   
     </div>

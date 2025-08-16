@@ -48,11 +48,11 @@ function App({children}) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(checkAuth());
-    console.log("auth", isAuthenticated);
+   
   }, []);
 
   const Location = useLocation();
-  console.log(Location.pathname);
+
 
   return (
 

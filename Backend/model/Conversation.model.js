@@ -17,7 +17,7 @@ const conversationSchema = new mongoose.Schema({
   // Participants in the conversation
   participants: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'AuthUser',
+    ref: 'User',
     required: true
   }],
 
@@ -42,7 +42,7 @@ const conversationSchema = new mongoose.Schema({
   // Created by (for group chats)
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'AuthUser'
+    ref: 'User'
   }
 }, {
   timestamps: true
