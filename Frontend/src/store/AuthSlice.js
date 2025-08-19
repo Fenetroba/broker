@@ -11,6 +11,9 @@ const initialState = {
   cityShopUsers: [],
   cityShopLoading: false,
   cityShopError: null,
+  LocalShopUsers: [],
+  LocalShopLoading: false,
+  LocalShopError: null,
 
   // Chat-related selections
   selectedFriendId: null,
@@ -116,6 +119,27 @@ export const fetchCityShopUsers = createAsyncThunk(
       // Ensure we're only returning users with role 'CityShop'
       const cityShopUsers = (data?.users || data?.data || []).filter(user => 
         user.role === 'CityShop'
+      );
+      return cityShopUsers;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: 'Failed to fetch City Shop users' });
+    }
+  }
+);
+export const fetchLocalShopUsers = createAsyncThunk(
+  'auth/fetchLocalShopUsers',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Explicitly request only CityShop users
+      const { data } = await api.get('/auth/users', { 
+        params: { 
+          role: 'LocalShop',
+          // Add any other necessary query parameters
+        } 
+      });
+      // Ensure we're only returning users with role 'CityShop'
+      const cityShopUsers = (data?.users || data?.data || []).filter(user => 
+        user.role === 'LocalShop'
       );
       return cityShopUsers;
     } catch (err) {
@@ -284,7 +308,24 @@ export const authSlice = createSlice({
       .addCase(fetchCityShopUsers.rejected, (state, action) => {
         state.cityShopLoading = false;
         state.cityShopError = action.payload?.message || action.error?.message || 'Failed to fetch City Shop users';
-      });
+      })
+      .addCase(fetchLocalShopUsers.pending, (state) => {
+        state.LocalShopLoading = true;
+        state.LocalShopError = null;
+      })
+      .addCase(fetchLocalShopUsers.fulfilled, (state, action) => {
+        state.LocalShopLoading = false;
+        state.LocalShopUsers = action.payload || [];
+      })
+      .addCase(fetchLocalShopUsers.rejected, (state, action) => {
+        state.LocalShopLoading = false;
+        state.LocalShopError = action.payload?.message || action.error?.message || 'Failed to fetch Local Shop users';
+      })
+      
+      
+      
+      
+      ;
   },
 });
 
@@ -295,3 +336,6 @@ export default authSlice.reducer;
 export const selectCityShopUsers = (state) => state.auth?.cityShopUsers || [];
 export const selectCityShopLoading = (state) => state.auth?.cityShopLoading || false;
 export const selectCityShopError = (state) => state.auth?.cityShopError || null;
+export const selectLocalShopUsers = (state) => state.auth?.LocalShopUsers || [];
+export const selectLocalShopLoading = (state) => state.auth?.LocalShopLoading || false;
+export const selectLocalShopError = (state) => state.auth?.LocalShopError || null;

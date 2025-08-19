@@ -36,6 +36,7 @@ import Inbox from "./pages/LocalShoper/Inbox";
 import Settings from "./pages/LocalShoper/Settings";
 import EditProfile from "./pages/AllUser_Profile/EditProfile";
 import ProductListPage from "./pages/LocalShoper/ProductListPage";
+import CityShop_Inbox from "./pages/CityShope/CityShop_Inbox";
 
 
 function App({children}) {
@@ -109,6 +110,7 @@ function App({children}) {
           }
         >
           <Route path="home" element={<CityHome />} />
+          <Route path="inbox" element={<CityShop_Inbox />} />
         </Route>
         {/* city shoper Page  */}
 
@@ -121,6 +123,7 @@ function App({children}) {
           }
         >
           <Route path="home" element={<AdminHome />} />
+    
         </Route>
 
         {/* all User can get */}

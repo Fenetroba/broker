@@ -1,6 +1,7 @@
 import React from "react";
 import { Building2, Calendar, Coins, Home, Inbox, ListOrdered, Search, Settings } from "lucide-react";
 
+
 import {
   SidebarProvider,
   Sidebar,
@@ -14,6 +15,7 @@ import {
 
 } from "@/components/ui/sidebar";
 import { FaCity } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 // Menu items.
 const items = [
@@ -24,12 +26,12 @@ const items = [
   },
   {
     title: "Inbox",
-    url: "#",
+    url: "/city_shop/inbox",
     icon: Inbox,
   },
   {
     title: "Find Products",
-    url: "#",
+    url: "",
     icon: Calendar,
   },
   {
@@ -57,7 +59,7 @@ const Header = () => {
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild className='hover:bg-[var(--two5m)] flex  text-[var(--two5m)]'>
-                  <a href={item.url} >
+                  <Link to={item.url} >
                     <item.icon  /> 
                   <span  className="flex ">{item.title}
     {
@@ -69,7 +71,7 @@ const Header = () => {
                   </span>
                    
                 
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

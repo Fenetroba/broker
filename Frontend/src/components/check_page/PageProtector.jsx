@@ -20,6 +20,7 @@ const allowedPages = [
   "/local_shop/setting",
   "/local_shop/earning",
   "/local_shop/product-list",
+  "/city_shop/inbox",
 ];
 
 const PageProtector = ({ isAuthenticated, children, user }) => {

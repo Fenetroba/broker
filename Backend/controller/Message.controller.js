@@ -1,6 +1,7 @@
 import Message from '../model/Message.model.js';
 import AuthUser from '../model/Authusers.model.js';
 import "dotenv/config";
+import mongoose from 'mongoose';
 // Create a new direct message
 export const createMessage = async (req, res) => {
   try {
@@ -60,14 +61,15 @@ export const getRecentChats = async (req, res) => {
     const userId = req.user.id;
     const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
     // Get distinct users the current user has chatted with
     const userMessages = await Message.aggregate([
       {
         $match: {
           $or: [
-            { sender: mongoose.Types.ObjectId(userId) },
-            { receiver: mongoose.Types.ObjectId(userId) }
+            { sender: userObjectId },
+            { receiver: userObjectId }
           ]
         }
       },
@@ -78,7 +80,7 @@ export const getRecentChats = async (req, res) => {
         $group: {
           _id: {
             $cond: [
-              { $eq: ['$sender', mongoose.Types.ObjectId(userId)] },
+              { $eq: ['$sender', userObjectId] },
               '$receiver',
               '$sender'
             ]
@@ -104,16 +106,35 @@ export const getRecentChats = async (req, res) => {
           email: '$user.email',
           avatar: '$user.avatar',
           lastMessage: 1,
-          unreadCount: 0 // You can add unread count logic if needed
+          unreadCount: { $literal: 0 } // You can add unread count logic if needed
         }
       }
     ]);
 
-    // Get total count of distinct users
-    const totalChats = await Message.distinct('$or', [
-      { sender: userId },
-      { receiver: userId }
-    ]).count();
+    // Get total count of distinct counterpart users
+    const totalAgg = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { sender: userObjectId },
+            { receiver: userObjectId }
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ['$sender', userObjectId] },
+              '$receiver',
+              '$sender'
+            ]
+          }
+        }
+      },
+      { $count: 'count' }
+    ]);
+    const totalChats = totalAgg?.[0]?.count || 0;
 
     res.status(200).json({
       success: true,

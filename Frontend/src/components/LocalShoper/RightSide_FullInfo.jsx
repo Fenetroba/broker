@@ -13,6 +13,7 @@ import {
   Globe,
   List,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 const RightSide_FullInfo = () => {
   const { selectedFriend } = useSelector((state) => state.auth);
   const [isMobile, setIsMobile] = useState(false);
@@ -97,17 +98,17 @@ const RightSide_FullInfo = () => {
                   </span>
                 </div>
                 <div className="bg-[var(--two2m)] ">
-                <div className="flex p-5 text-white rounded-lg"><Building/> <span>Company Name</span>
+                <div className="flex p-2 text-white items-center gap-2 rounded-lg"><Building/>
                 
-                <span className="text-sm font-medium text-gray-800 capitalize">
+                <span className="text-sm font-medium text-gray-100 capitalize">
                   {selectedFriend.companyName || ''}
                 </span>
               </div>
-              <div className="flex  p-5 text-white rounded-lg"><Globe/> <span> Website</span>
+              <div className="flex  p-2 text-white items-center gap-2 rounded-lg"><Globe/>
               
-                <span className="text-sm font-medium text-gray-800 capitalize">
+                <Link to={selectedFriend.companyWebsite || ''} className="text-sm hover:text-green-200 font-medium text-gray-100 capitalize">
                   {selectedFriend.companyWebsite || ''}
-                </span>
+                </Link>
               </div>
                 </div>
               </div>
