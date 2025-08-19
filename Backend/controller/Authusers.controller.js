@@ -1,9 +1,10 @@
 import express from "express";
 import AuthUser from "../model/Authusers.model.js";
 import bcrypt from 'bcrypt';
-import env from 'dotenv';
+import "dotenv/config";
 import jwt from "jsonwebtoken";
-env.config();
+import cloudinary from '../Db/cloudinary.js'
+
 
 // Generate access and refresh tokens
 const generateTokens = (userId) => {
@@ -227,8 +228,12 @@ export const fetchCityShopUsers = async (req, res) => {
     // Build case-insensitive role patterns to support variants like CityShop, city_shop, city-shop, etc.
     const rolePatterns = [
       new RegExp(`^${role}$`, 'i'),
-      /^city[_\s-]?shop$/i,
+      /^City[\s-]?Shop$/i,
+      /^Local[\s-]?Shop$/i,
     ];
+    
+    // Normalize the role to handle both 'LocalShop' and 'Local_Shop' formats
+    const normalizedRole = role.replace(/[_\s-]/g, '').toLowerCase();
 
     // Support different field names that might be used to store role/type (case-insensitive)
     const roleFilter = {
@@ -236,6 +241,8 @@ export const fetchCityShopUsers = async (req, res) => {
         { role: { $in: rolePatterns } },
         { userType: { $in: rolePatterns } },
         { UserType: { $in: rolePatterns } },
+        // Also try matching with normalized role
+        { role: { $regex: new RegExp(`^${normalizedRole}$`, 'i') } },
       ],
     };
 
@@ -284,3 +291,103 @@ export const fetchCityShopUsers = async (req, res) => {
   }
 };
 
+// Upload file to Cloudinary helper function
+const uploadToCloudinary = async (file) => {
+  if (!file) return null;
+  
+  // Convert buffer to base64
+  const b64 = Buffer.from(file.buffer).toString("base64");
+  const dataURI = `data:${file.mimetype};base64,${b64}`;
+  
+  try {
+    const result = await cloudinary.uploader.upload(dataURI, {
+      resource_type: "auto"
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error("Error uploading to Cloudinary:", error);
+    return null;
+  }
+};
+
+export const UpdateUserFile = async (req, res) => {
+    try {
+        const { name, email, role, address, phone, companyName, companyWebsite, businessRegistrationNO } = req.body;
+        const userId = req.user.id;
+        
+        // Find the user
+        const user = await AuthUser.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Handle file uploads
+        if (req.files) {
+            // Handle profile picture
+            if (req.files.profilePic) {
+                user.profilePic = await uploadToCloudinary(req.files.profilePic[0]);
+            }
+            // Handle task license
+            if (req.files.taskLicence) {
+                user.TaskLicence = await uploadToCloudinary(req.files.taskLicence[0]);
+            }
+            // Handle national ID
+            if (req.files.nationalId) {
+                user.NationalId = await uploadToCloudinary(req.files.nationalId[0]);
+            }
+        }
+
+        // Update user fields if provided
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (role) user.role = role;
+        if (address) user.address = address;
+        if (phone) user.phone = phone;
+        if (companyName) user.companyName = companyName;
+        if (companyWebsite) user.companyWebsite = companyWebsite;
+        if (businessRegistrationNO) user.businessRegistrationNO = businessRegistrationNO;
+
+        // Save the updated user
+        await user.save();
+        
+        // Return updated user data (excluding sensitive info)
+        const { password: _, refreshToken: __, ...userData } = user.toObject();
+        
+        return res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            user: userData
+        });
+        
+    } catch (error) {
+        console.error("Error in UpdateUserFile controller:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        });
+    }
+}
+
+// export const Pictures=async(req,res)=>{
+
+//   try {
+//     const {Pic}=req.body;
+   
+//     const Userid=req.user._id;
+
+
+//     const UploadImgToCloud=await cloudinary.uploader.upload(Pic);
+
+//     const UpdateUserProfile=await AuthUser.findByIdAndUpdate(Userid,{profilePic:UploadImgToCloud.secure_url},{new:true})
+
+//     return res.status(200).json({success:true,UpdateUserProfile})
+//   } catch (error) {
+//     console.log(error)
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Internal Server Error'
+//     });
+//   }
+
+// }

@@ -11,22 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import National_Id from '../../assets/cityBanner.png'
+import { useSelector } from "react-redux";
 
-const sampleUser = {
-  avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  username: "johndoe",
-  email: "john.doe@example.com",
-  role: "customer",
-  fullName: "John Doe",
-
-  phone: "+1 555-123-4567",
-  location: "San Francisco, CA",
-  createdAt: "2023-01-15T10:00:00Z",
-  updatedAt: "2024-06-01T12:00:00Z",
-  isActive: true,
-};
 
 const Profile = () => {
+  const {user}=useSelector((state)=>state.auth)
+
   return (
     <section>
       <div className="container mx-auto bg-[var(--two5m)] h-full p-4 md:p-10 m-4 md:m-10 rounded-2xl">
@@ -36,22 +26,22 @@ const Profile = () => {
             <CardHeader className="flex flex-row items-center gap-4">
               <Avatar className="h-20 w-20 bg-green-400">
                 <AvatarImage
-                  src={sampleUser.avatar}
-                  alt={sampleUser.username}
+                  src={user?.profilePic || ''}
+                  alt={user?.name || ''}
                 />
                 <AvatarFallback>
-                  {sampleUser.username.charAt(0).toUpperCase()}
+                  {user?.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">
-                  {sampleUser.username}
+                  {user?.name || ''}
                 </CardTitle>
                 <CardDescription className="text-lg">
-                  {sampleUser.email}
+                  {user?.email || ''}
                 </CardDescription>
                 <Badge variant="secondary" className="mt-2">
-                  {sampleUser.role}
+                  {user?.role || ''}
                 </Badge>
               </div>
             </CardHeader>
@@ -69,26 +59,26 @@ const Profile = () => {
                   <h3 className="text-sm font-medium text-gray-500">
                     Full Name
                   </h3>
-                  <p className="mt-1">{sampleUser.fullName}</p>
+                  <p className="mt-1">{user?.name || ''}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">
                     Phone Number
                   </h3>
-                  <p className="mt-1">{sampleUser.phone}</p>
+                  <p className="mt-1">{user?.phone || ''}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">
                     Location
                   </h3>
-                  <p className="mt-1">{sampleUser.location}</p>
+                  <p className="mt-1">{user?.address || ''}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">
                     National Id
                   </h3>
           
-                  <img className="mt-1 w-50 " src={National_Id} alt="national id" />
+                  <img className="mt-1 w-50 " src={user?.nationalId || ''} alt="national id" />
                 </div>
               </CardContent>
             </Card>
@@ -106,7 +96,7 @@ const Profile = () => {
                     Member Since
                   </h3>
                   <p className="mt-1">
-                    {new Date(sampleUser.createdAt).toLocaleDateString()}
+                    {new Date(user?.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
@@ -114,7 +104,7 @@ const Profile = () => {
                     Last Updated
                   </h3>
                   <p className="mt-1">
-                    {new Date(sampleUser.updatedAt).toLocaleDateString()}
+                    {new Date(user?.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
@@ -123,9 +113,9 @@ const Profile = () => {
                   </h3>
                   <p className="mt-1">
                     <Badge
-                      variant={sampleUser.isActive ? "success" : "destructive"}
+                      variant={user?.isActive ? "success" : "destructive"}
                     >
-                      {sampleUser.isActive ? "Active" : "Inactive"}
+                      {user?.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </p>
                 </div>

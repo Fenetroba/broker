@@ -1,16 +1,15 @@
 import jwt from "jsonwebtoken";
 import AuthUser from "../model/Authusers.model.js";
-import env from 'dotenv'
-env.config()
+import "dotenv/config";
 
 
 
 export const protectRoute = async (req, res, next) => {
 	try {
 		// 1. Get the access token from cookies
-		console.log('Cookies:', req.cookies);
+	
 		const accessToken = req.cookies.accessToken;
-		console.log('Access token from cookies:', accessToken ? 'Token exists' : 'No token found');
+	
 	
 
 		if (!accessToken) {
@@ -21,7 +20,7 @@ export const protectRoute = async (req, res, next) => {
 		try {
 			// 2. Verify the token
 			decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-			console.log('Decoded JWT:', decoded);
+		
 		} catch (error) {
 			if (error.name === "TokenExpiredError") {
 				return res.status(401).json({ message: "Unauthorized - Access token expired" });
@@ -33,15 +32,15 @@ export const protectRoute = async (req, res, next) => {
 
 		try {
 				// 3. Find the user by ID from the token payload
-			console.log('Looking for user with ID:', decoded.userId);
+			
 			const user = await AuthUser.findById(decoded.userId).select("-password");
 			
 			if (!user) {
-				console.log('User not found with ID:', decoded.userId);
+		
 				return res.status(401).json({ message: "Unauthorized - User not found" });
 			}
 			
-			console.log('User found:', { id: user._id, email: user.email });
+			
 
 			// 4. Attach user to request and proceed
 			req.user = user;

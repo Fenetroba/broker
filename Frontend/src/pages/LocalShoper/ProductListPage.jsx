@@ -1,8 +1,11 @@
+import ListProducts from '@/components/LocalShoper/ProductDetail/ListProducts'
 import React from 'react'
 
 const ProductListPage = () => {
   return (
-    <div>ProductListPage</div>
+    <div >
+      <ListProducts/>
+    </div>
   )
 }
 

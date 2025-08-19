@@ -1,6 +1,6 @@
 import Message from '../model/Message.model.js';
 import AuthUser from '../model/Authusers.model.js';
-
+import "dotenv/config";
 // Create a new direct message
 export const createMessage = async (req, res) => {
   try {
@@ -268,25 +268,3 @@ export const searchMessages = async (req, res) => {
     });
   }
 };
-export const Pictures=async(req,res)=>{
-
-  try {
-    const {Pic}=req.body;
-   
-    const Userid=req.user._id;
-
-
-    const UploadImgToCloud=await cloudinary.uploader.upload(Pic);
-
-    const UpdateUserProfile=await User.findByIdAndUpdate(Userid,{Pic:UploadImgToCloud.secure_url},{new:true})
-
-    return res.status(200).json({success:true,UpdateUserProfile})
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-      success: false,
-      message: 'Internal Server Error'
-    });
-  }
-
-}

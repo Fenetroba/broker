@@ -78,7 +78,7 @@ const dispatch=useDispatch()
           </Button>
           {/* the use profile */}
     {
-      isAuthenticated ?       <Link to='/user/profile'>
+      isAuthenticated ?       <Link to='/local_shop/home'>
       <Button className="text-black cursor-pointer shadow-lg w-20 bg-[var(--two5m)] rounded-[3px] hover:bg-gray-200">
         
            <User fontSize={32} />

@@ -101,22 +101,45 @@ export const GetVerifyedUser = createAsyncThunk(
   }
 );
 
-// Fetch users by role: city_shop
+// Fetch users by role: CityShop
 export const fetchCityShopUsers = createAsyncThunk(
   'auth/fetchCityShopUsers',
   async (_, { rejectWithValue }) => {
     try {
-      // EXPECTED backend route: GET /auth/users?role=city_shop (adjust if different)
-      const { data } = await api.get('/auth/users', { params: { role: 'CityShop' } });
-      // Accept either { users: [...] } or { data: [...] }
-      return data?.users || data?.data || [];
+      // Explicitly request only CityShop users
+      const { data } = await api.get('/auth/users', { 
+        params: { 
+          role: 'CityShop',
+          // Add any other necessary query parameters
+        } 
+      });
+      // Ensure we're only returning users with role 'CityShop'
+      const cityShopUsers = (data?.users || data?.data || []).filter(user => 
+        user.role === 'CityShop'
+      );
+      return cityShopUsers;
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: 'Failed to fetch City Shop users' });
     }
   }
 );
 
-
+export const UpdateUserInformation = createAsyncThunk(
+  'user/UpdateProfile',
+  async ({ formData, config }, { rejectWithValue }) => {
+    try {
+      const response = await api.put('/auth/updateUserFile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...config?.headers
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 
 export const authSlice = createSlice({
@@ -229,6 +252,25 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = action.payload?.message || 'Token refresh failed';
       })
+
+      // Update User Information
+      .addCase(UpdateUserInformation.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(UpdateUserInformation.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.error = null;
+      })
+      .addCase(UpdateUserInformation.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = action.payload?.message || 'Update User Information failed';
+      })
+
+
 
       // City Shop Users list
       .addCase(fetchCityShopUsers.pending, (state) => {

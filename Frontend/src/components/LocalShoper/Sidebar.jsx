@@ -83,7 +83,10 @@ const Header = ({isAuthenticated ,user}) => {
         </SidebarGroup>
 
         <div className="absolute w-full bottom-0 bg-[var(--two5m)] flex items-center justify-around rounded-t-2xl p-4">
-         <div className="w-20 h-20 bg-amber-100 rounded-full"></div>
+      
+         
+         <img className="w-20 h-20 bg-amber-100 rounded-full" src={user?.profilePic || ''} alt= {user?.name.charAt(0)}/>
+   
          <div className="text-[14px]">
           <p><strong>Name</strong> : {user?.name || 'N/A'}</p>
           <p><strong>Email</strong> : {truncateEmail(user?.email)}</p>
