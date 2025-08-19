@@ -17,7 +17,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
 import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { LogOut } from "../../store/AuthSlice";
 const Hero = () => {
+  const dispatch = useDispatch();
   return (
   <section>
       <div className=" shadow flex justify-between items-center pr-10">
@@ -45,7 +48,7 @@ const Hero = () => {
             <DropdownMenuItem  className=' cursor-pointer'><Link to='/user/profile'>Profile</Link> </DropdownMenuItem>
             <DropdownMenuItem  className=' cursor-pointer'>Billing</DropdownMenuItem>
             <DropdownMenuItem  className='  '>
-              <Button className='cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900'>Log Out </Button>
+              <Button className='cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900' onClick={()=> dispatch(LogOut())} >Log Out </Button>
             </DropdownMenuItem>
             <DropdownMenuItem  className=' cursor-pointer'>Subscription</DropdownMenuItem>
           </DropdownMenuContent>

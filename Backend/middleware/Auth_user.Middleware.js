@@ -58,3 +58,16 @@ export const protectRoute = async (req, res, next) => {
 };
 
 
+
+// Middleware to restrict access to admin users only
+export const adminOnly = (req, res, next) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden - Admins only" });
+    }
+    next();
+  } catch (error) {
+    console.log("Error in adminOnly middleware:", error.message);
+    return res.status(500).json({ message: "Internal server error in middleware" });
+  }
+};

@@ -128,6 +128,14 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const SearchProduct=async(req,res)=>{
+  try {
+    
+    
+  } catch (error) {
+    
+  }
+}
 export {
   getProducts,
   getProductById,

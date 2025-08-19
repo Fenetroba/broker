@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Loader2, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct } from '@/store/Productsice';
+import { createProduct } from '@/store/ProductSlice';
 import { toast } from 'sonner';
 const Create_product = () => {
  const {status}=useSelector((state)=>state.products)

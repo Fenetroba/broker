@@ -22,11 +22,12 @@ import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchProducts, deleteProduct } from "@/store/Productsice";
+import { fetchProducts, deleteProduct } from "@/store/ProductSlice";
 import { Pencil, Trash2, Search, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import PageLoad from "@/components/Loading/PageLoad";
+import View_details from "./View_details";
 
 const ListProducts = () => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const ListProducts = () => {
     error: state.products.error,
   }));
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
 
@@ -74,13 +76,16 @@ const ListProducts = () => {
     setProductToDelete(null);
   };
 
-  // Filter products based on search term
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get unique categories from products
+  const categories = ["All", ...new Set(products.map(product => product.category).filter(Boolean))];
+  
+  // Filter products based on search term and selected category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (product.description?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   // Get current products for pagination
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -95,7 +100,7 @@ const ListProducts = () => {
 
   if (status === "loading" && products.length === 0) {
     return (
-      <div className="container mx-auto p-4">
+      <div className=" mx-auto p-4 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
             <Card key={index} className="h-full border-0 shadow-2xl flex flex-col">
@@ -130,15 +135,19 @@ const ListProducts = () => {
 
   return (
     <div className="">
-      <div className="flex flex-col md:flex-row shadow-emerald-100  shadow justify-between items-center mb-4 gap-3 px-2">
-        <h1 className="text-xl font-bold text-gray-800 p-3">My Products</h1>
-        <div className="flex w-full md:w-2/3 gap-2">
-          <div className="relative flex-grow">
-            <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+      <div className=" container mx-auto flex flex-col w-full gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-2xl font-bold text-gray-800">My Products</h1>
+        
+        </div>
+        
+        <div className="  flex flex-col sm:flex-row gap-4 w-full">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="search"
-              placeholder="Search products..."
-              className="pl-8 h-9 text-sm"
+              placeholder="Search by name or description..."
+              className="pl-10 h-10 text-sm w-full"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -146,6 +155,21 @@ const ListProducts = () => {
               }}
             />
           </div>
+          
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="h-10 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--two2m)]"
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -162,11 +186,11 @@ const ListProducts = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 p-2">
+          <div className="grid  grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 p-2">
             {currentProducts.map((product) => (
               <Card
                 key={product._id}
-                className="h-full flex border-0 flex-col hover:shadow-lg transition-shadow overflow-hidden"
+                className="h-full  flex border-0 flex-col shadow-emerald-900 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
                 <div className="relative aspect-square overflow-hidden">
                   <img
@@ -194,7 +218,7 @@ const ListProducts = () => {
                     {product.category}
                   </Badge>
                 </CardHeader>
-                <CardContent className="p-3 pt-0 flex-grow">
+                <CardContent className=" p-3 pt-0 flex-grow">
                   <div className="flex items-center justify-between mt-1">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
@@ -220,34 +244,10 @@ const ListProducts = () => {
                     </Badge>
                   </div>
                 </CardContent>
-                <CardFooter className="text-[var(--two5m)] pt-0  bg-[var(--two2m)]  p-1 flex justify-between space-x-1">
-                  <Link
-                    to={`/local_shop/product/${product._id}`}
-                    className="flex-1"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs h-8 cursor-pointer hover:bg-[var(--two3m)]"
-                    >
-                      View Details
-                    </Button>
-                  </Link>
-                  <Link
-                    to={`/local_shop/edit-product/${product._id}`}
-                    className="flex-shrink-0"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 w-8 p-0 cursor-pointer hover:bg-[var(--two3m)]"
-                      title="Edit"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                  </Link>
+                <CardFooter className="text-[var(--two5m)] pt-0  bg-[var(--two2m)]  p-1 flex space-x-1">
               
-
+                   
+                      <View_details productId={product._id} />
 
                   <AlertDialog open={deleteDialogOpen && productToDelete === product._id} onOpenChange={setDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>
@@ -261,7 +261,7 @@ const ListProducts = () => {
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="bg-[var(--two5m)]">
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure you want to delete this product?</AlertDialogTitle>
                         <AlertDialogDescription>
@@ -269,10 +269,10 @@ const ListProducts = () => {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel onClick={cancelDelete} className="cursor-pointer">Cancel</AlertDialogCancel>
                         <AlertDialogAction 
                           onClick={confirmDelete}
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-red-600 hover:bg-red-700 cursor-pointer"
                         >
                           Delete
                         </AlertDialogAction>
