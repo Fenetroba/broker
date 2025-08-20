@@ -21,6 +21,7 @@ const allowedPages = [
   "/local_shop/earning",
   "/local_shop/product-list",
   "/city_shop/inbox",
+  "/city_shop/find-products",
 ];
 
 const PageProtector = ({ isAuthenticated, children, user }) => {

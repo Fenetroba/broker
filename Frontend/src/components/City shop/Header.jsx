@@ -31,7 +31,7 @@ const items = [
   },
   {
     title: "Find Products",
-    url: "",
+    url: "/city_shop/find-products",
     icon: Calendar,
   },
   {
@@ -46,7 +46,11 @@ const items = [
   },
 
 ];
-const Header = () => {
+const Header = ({user}) => {
+  const truncateEmail = (email) => {
+    if (!email) return '';
+    return email.length > 10 ? email.substring(0, 10) + '...' : email;
+  };
   return (
 
       
@@ -79,10 +83,20 @@ const Header = () => {
         </SidebarGroupContent>
       </SidebarGroup>
       <div className="absolute w-full bottom-0 bg-[var(--two5m)] flex items-center justify-around rounded-t-2xl p-4">
-           <div className="w-20 h-20 bg-amber-100 rounded-full"></div>
+      {user?.profilePic ? (
+        <img
+          className="w-20 h-20 bg-amber-100 rounded-full object-cover"
+          src={user.profilePic}
+          alt={user?.name || user?.email || 'User'}
+        />
+      ) : (
+        <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center text-3xl font-semibold text-gray-700">
+          {(user?.name || user?.email || 'U').slice(0,1).toUpperCase()}
+        </div>
+      )}
            <div className="text-[14px]">
-            <p><strong>Name</strong> : fenet roba</p>
-            <p><strong>Email</strong> :fenetroba700@</p>
+           <p><strong>Name</strong> : {user?.name || 'N/A'}</p>
+           <p><strong>Email</strong> : {truncateEmail(user?.email)}</p>
            </div>
           </div>
       </SidebarContent>

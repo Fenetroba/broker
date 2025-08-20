@@ -12,6 +12,7 @@ import { fetchProductsById } from '@/store/ProductSlice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const View_details = ({ productId }) => {
   const { currentProduct, status } = useSelector(state => state.products);
@@ -19,9 +20,9 @@ const View_details = ({ productId }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (status==='fullfilled') {
+  
       dispatch(fetchProductsById(productId));
-    }
+    
   }, [isOpen, dispatch, productId]);
 
   const renderStars = (rating) => {
@@ -49,9 +50,19 @@ const View_details = ({ productId }) => {
         aria-label="Product details"
       >
         {status === 'loading' ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--two2m)]" />
-          </div>
+          <>
+            <SheetHeader>
+              <VisuallyHidden asChild>
+                <SheetTitle>Loading product details</SheetTitle>
+              </VisuallyHidden>
+              <VisuallyHidden asChild>
+                <SheetDescription>We are fetching the product information.</SheetDescription>
+              </VisuallyHidden>
+            </SheetHeader>
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-[var(--two2m)]" />
+            </div>
+          </>
         ) : currentProduct ? (
           <div className="max-w-5xl mx-auto p-6">
             <SheetHeader className="mb-6">
@@ -60,6 +71,9 @@ const View_details = ({ productId }) => {
                   <SheetTitle className="text-2xl font-bold text-gray-800">
                     {currentProduct.name}
                   </SheetTitle>
+                  <VisuallyHidden asChild>
+                    <SheetDescription>Product details for {currentProduct.name}</SheetDescription>
+                  </VisuallyHidden>
                   <div className="flex items-center mt-2 space-x-4 text-sm text-gray-600">
                     <span>Category: {currentProduct.category || 'N/A'}</span>
                     <span>•</span>
@@ -142,16 +156,26 @@ const View_details = ({ productId }) => {
             )}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Unable to load product details.</p>
-            <Button 
-              variant="outline" 
-              className="mt-4"
-              onClick={() => dispatch(fetchProductsById(productId))}
-            >
-              Retry
-            </Button>
-          </div>
+          <>
+            <SheetHeader>
+              <VisuallyHidden asChild>
+                <SheetTitle>Unable to load product details</SheetTitle>
+              </VisuallyHidden>
+              <VisuallyHidden asChild>
+                <SheetDescription>An error occurred while fetching the product data.</SheetDescription>
+              </VisuallyHidden>
+            </SheetHeader>
+            <div className="text-center py-12">
+              <p className="text-gray-500">Unable to load product details.</p>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => dispatch(fetchProductsById(productId))}
+              >
+                Retry
+              </Button>
+            </div>
+          </>
         )}
       </SheetContent>
     </Sheet>

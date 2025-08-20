@@ -3,12 +3,12 @@ import Hero from '@/components/City shop/Hero'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import React from 'react'
 
-const CityHome = () => {
+const  CityHome = ({user}) => {
   return ( 
     <div className='relative overflow-hidden '>
       <SidebarProvider>
       <div className="flex-none">
-        <Header />
+        <Header user={user}/>
       </div>
           <SidebarTrigger className='bg-[var(--two3m)] cursor-pointer rounded-2xl'/>
       <div className="flex-1 sm:p-6 p-1">

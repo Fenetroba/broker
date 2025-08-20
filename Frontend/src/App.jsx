@@ -37,6 +37,7 @@ import Settings from "./pages/LocalShoper/Settings";
 import EditProfile from "./pages/AllUser_Profile/EditProfile";
 import ProductListPage from "./pages/LocalShoper/ProductListPage";
 import CityShop_Inbox from "./pages/CityShope/CityShop_Inbox";
+import Find_products from "./pages/CityShope/Find_products";
 
 
 function App({children}) {
@@ -109,8 +110,9 @@ function App({children}) {
             </PageProtector>
           }
         >
-          <Route path="home" element={<CityHome />} />
+          <Route path="home" element={<CityHome user={user} />} />
           <Route path="inbox" element={<CityShop_Inbox />} />
+          <Route path="find-products" element={<Find_products />} />
         </Route>
         {/* city shoper Page  */}
 
