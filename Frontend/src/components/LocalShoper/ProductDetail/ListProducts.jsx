@@ -127,11 +127,7 @@ const ListProducts = () => {
     );
   }
 
-  if (status==="loading") {
-    return (
-    <PageLoad/>
-    );
-  }
+
 
   return (
     <div className="">
@@ -247,7 +243,7 @@ const ListProducts = () => {
                 <CardFooter className="text-[var(--two5m)] pt-0  bg-[var(--two2m)]  p-1 flex space-x-1">
               
                    
-                      <View_details productId={product._id} />
+                      <View_details productId={product?._id || product.id} />
 
                   <AlertDialog open={deleteDialogOpen && productToDelete === product._id} onOpenChange={setDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>

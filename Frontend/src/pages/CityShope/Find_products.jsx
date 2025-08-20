@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
         <div className='flex items-center gap-2'>
         <Button
             className='p-0 rounded-[10px] px-2 h-8 bg-[var(--two2m)] hover:bg-[var(--two3m)] text-[var(--two5m)] cursor-pointer'
-            onClick={() => ownerId && navigate(`/city_shop/order`)}
+            onClick={() => ownerId && navigate(`/city_shop/order/${_id || id}`)}
             aria-label="Chat with seller"
           >
             Start Order

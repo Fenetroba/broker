@@ -2,6 +2,7 @@ import Message from '../model/Message.model.js';
 import AuthUser from '../model/Authusers.model.js';
 import "dotenv/config";
 import mongoose from 'mongoose';
+import { io } from '../Db/socket.io.js';
 // Create a new direct message
 export const createMessage = async (req, res) => {
   try {
@@ -40,6 +41,15 @@ export const createMessage = async (req, res) => {
       { path: 'sender', select: 'name email avatar' },
       { path: 'receiver', select: 'name email avatar' }
     ]);
+
+    // Emit real-time event to the receiver's room
+    try {
+      if (receiverId) {
+        io.to(String(receiverId)).emit('direct_message', message);
+      }
+    } catch (emitErr) {
+      console.error('Socket emit error:', emitErr);
+    }
 
     res.status(201).json({
       success: true,

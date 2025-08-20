@@ -38,14 +38,15 @@ import EditProfile from "./pages/AllUser_Profile/EditProfile";
 import ProductListPage from "./pages/LocalShoper/ProductListPage";
 import CityShop_Inbox from "./pages/CityShope/CityShop_Inbox";
 import Find_products from "./pages/CityShope/Find_products";
+import Order from "./pages/CityShope/Order";
+import { Button } from "./components/ui/button";
+
 
 
 function App({children}) {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
  
-// const user="city_shop";
-// const isAuthenticated=true
-//   console.log("auth", isAuthenticated, user);
+
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -58,7 +59,10 @@ function App({children}) {
 
   return (
 
+
 <div className="">
+
+
       <Toaster />
 
       <Routes>
@@ -113,6 +117,8 @@ function App({children}) {
           <Route path="home" element={<CityHome user={user} />} />
           <Route path="inbox" element={<CityShop_Inbox />} />
           <Route path="find-products" element={<Find_products />} />
+          {/* Order details route */}
+          <Route path="order/:id" element={<Order />} />
         </Route>
         {/* city shoper Page  */}
 
@@ -143,7 +149,7 @@ function App({children}) {
 
         {/* No found */}
         <Route path="*" element={<Nofound />} />
-      </Routes>
+      </Routes> 
 
 
   

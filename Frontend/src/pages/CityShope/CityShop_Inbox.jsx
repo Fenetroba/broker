@@ -17,7 +17,23 @@ import { SpaceIcon } from 'lucide-react';
 
 import RightSide_FullInfo from '@/components/LocalShoper/RightSide_FullInfo';
 import MainChat from '@/components/City shop/MainChat';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+import { setSelectedUserId } from '@/store/AuthSlice';
+
 const CityShop_Inbox = () => {
+  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+
+  // If navigated with /city_shop/inbox?to=<userId>, pre-select that user in chat
+  useEffect(() => {
+    const to = searchParams.get('to');
+    if (to) {
+      dispatch(setSelectedUserId(to));
+    }
+  }, [searchParams, dispatch]);
+
   return (
     <div className=' relative overflow-hidden'>
 

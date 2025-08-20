@@ -20,9 +20,8 @@ const View_details = ({ productId }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-  
-      dispatch(fetchProductsById(productId));
-    
+    if (!isOpen || !productId) return;
+    dispatch(fetchProductsById(productId));
   }, [isOpen, dispatch, productId]);
 
   const renderStars = (rating) => {
@@ -40,13 +39,14 @@ const View_details = ({ productId }) => {
           variant="outline" 
           size="sm" 
           className="w-[70%] text-xs h-8 cursor-pointer hover:bg-[var(--two3m)]"
+          onClick={() => setIsOpen(true)}
         >
           View Details
         </Button>
       </SheetTrigger>
       <SheetContent 
         side="top" 
-        className="w-full max-w-6xl mx-auto h-[90vh] overflow-y-auto bg-white"
+        className="w-full max-w-6xl mx-auto h-[90vh] overflow-y-auto bg-white z-[9999]"
         aria-label="Product details"
       >
         {status === 'loading' ? (

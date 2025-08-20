@@ -7,7 +7,8 @@ import cors from 'cors'
 import Chatrouter from './Router/Message.router.js'
 import Telegramrouter from './Router/Telegram.js'
 import Productrouter from './Router/Product.router.js'
-const app=express()
+import { app,HttpServer } from './Db/socket.io.js';
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -19,7 +20,7 @@ app.use('/api/auth',Authroute)
 app.use('/api/chat',Chatrouter)
 app.use('/telegram',Telegramrouter)
 app.use('/api/product',Productrouter)
-app.listen(PORT,()=>{
+HttpServer.listen(PORT,()=>{
      console.log("the server connect with port ",PORT)
      DBconnect();
 

@@ -35,8 +35,8 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "My Orders",
-    url: "#",
+    title: "My Orders History",
+    url: "/city_shop/order/history",
     icon: ListOrdered,
   },
   {
