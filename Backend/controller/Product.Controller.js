@@ -26,6 +26,28 @@ const getProductById = async (req, res) => {
   }
 };
 
+const likeProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    // Check if the user is the owner of the product
+    if (product.owner.toString() === req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(401).json({ message: 'Not authorized to like this product' });
+    }
+    
+    product.isLiked = !product.isLiked;
+    await product.save();
+    
+    res.status(200).json({ message: 'Product liked' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
 
 const createProduct = async (req, res) => {
   try {
@@ -141,5 +163,6 @@ export {
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  likeProduct
 };

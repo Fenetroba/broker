@@ -2,6 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion';
 import Logo from '../../assets/Logo.png';
 import { CheckCircle, ArrowRightCircle, Sparkles } from 'lucide-react';
+import WhyChooseUs from '../../components/gust/WhyChooseUs';
 
 const steps = [
   {
@@ -84,6 +85,7 @@ const HowToWork = () => {
           ))}
         </motion.div>
       </div>
+      <WhyChooseUs/>
     </section>
   );
 }

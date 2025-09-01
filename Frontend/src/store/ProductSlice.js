@@ -42,6 +42,18 @@ export const createProduct = createAsyncThunk(
     }
   }
 );
+export const likeProduct = createAsyncThunk(
+  'products/like',
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(`/product/like-product/${productId}`);
+      return { productId, isLiked: response.data.isLiked };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
+  }
+);
+
 
 export const updateProduct = createAsyncThunk(
   'products/update',
@@ -71,6 +83,18 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+export const updateProductRating = createAsyncThunk(
+  'products/updateRating',
+  async ({ productId, rating }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`/product/${productId}/rate`, { rating });
+      return { productId, rating: response.data.averageRating, numReviews: response.data.numReviews };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
+  }
+);
+
 const productSlice = createSlice({
   name: 'products',
   initialState: {
@@ -88,6 +112,20 @@ const productSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    // Handle like product
+    builder.addCase(likeProduct.fulfilled, (state, action) => {
+      const { productId, isLiked } = action.payload;
+      // Update in items array
+      const productIndex = state.items.findIndex(p => p._id === productId);
+      if (productIndex !== -1) {
+        state.items[productIndex].isLiked = isLiked;
+      }
+      // Update current product if it's the one being liked
+      if (state.currentProduct?._id === productId) {
+        state.currentProduct.isLiked = isLiked;
+      }
+    });
+
     // Fetch Products
     builder
       .addCase(fetchProducts.pending, (state) => {

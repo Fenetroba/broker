@@ -8,28 +8,83 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProductsById } from '@/store/ProductSlice';
+import { fetchProductsById, updateProductRating } from '@/store/ProductSlice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Star } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+// import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 const View_details = ({ productId }) => {
   const { currentProduct, status } = useSelector(state => state.products);
   const [isOpen, setIsOpen] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isRating, setIsRating] = useState(false);
   const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
 
   useEffect(() => {
     if (!isOpen || !productId) return;
     dispatch(fetchProductsById(productId));
   }, [isOpen, dispatch, productId]);
 
-  const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => (
-      <span key={i} className={`text-${i < Math.floor(rating || 0) ? 'yellow-400' : 'gray-300'}`}>
-        ★
-      </span>
-    ));
+  useEffect(() => {
+    if (currentProduct?.ratings && user) {
+      const userRating = currentProduct.ratings.find(r => r.user === user.id);
+      if (userRating) {
+        setUserRating(userRating.rating);
+      }
+    }
+  }, [currentProduct, user]);
+
+  const handleRating = async (rating) => {
+    if (!user) {
+      toast.error('Please login to rate this product');
+      return;
+    }
+    
+    try {
+      setIsRating(true);
+      await dispatch(updateProductRating({ productId, rating })).unwrap();
+      await dispatch(fetchProductsById(productId));
+      toast.success('Rating submitted successfully');
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      toast.error(error.message || 'Failed to submit rating');
+    } finally {
+      setIsRating(false);
+    }
+  };
+
+  const renderStars = (rating, interactive = false, size = 'md') => {
+    return Array(5).fill(0).map((_, i) => {
+      const ratingValue = i + 1;
+      const isFilled = ratingValue <= (hoverRating || userRating || rating || 0);
+      
+      return interactive ? (
+        <button
+          key={i}
+          type="button"
+          className={`${size === 'md' ? 'text-2xl' : 'text-lg'} ${
+            isFilled ? 'text-yellow-400' : 'text-gray-300'
+          } transition-colors focus:outline-none`}
+          onMouseEnter={() => setHoverRating(ratingValue)}
+          onMouseLeave={() => setHoverRating(0)}
+          onClick={() => handleRating(ratingValue)}
+          disabled={isRating}
+          aria-label={`Rate ${ratingValue} out of 5`}
+        >
+          <Star className={`w-5 h-5 ${isFilled ? 'fill-current' : ''}`} />
+        </button>
+      ) : (
+        <Star 
+          key={i} 
+          className={`w-4 h-4 ${i < Math.floor(rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+        />
+      );
+    });
   };
 
   return (
@@ -79,7 +134,9 @@ const View_details = ({ productId }) => {
                     <span>•</span>
                     <div className="flex items-center">
                       {renderStars(currentProduct.rating || 0)}
-                      <span className="ml-2">({currentProduct.numReviews || 0} reviews)</span>
+                      <span className="ml-2 text-sm">
+                        ({currentProduct.numReviews || 0} {currentProduct.numReviews === 1 ? 'review' : 'reviews'})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -88,6 +145,22 @@ const View_details = ({ productId }) => {
                 </Badge>
               </div>
             </SheetHeader>
+
+            {/* Rating Section */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">Rate this product</h3>
+              <div className="flex items-center space-x-2">
+                <div className="flex" onMouseLeave={() => setHoverRating(0)}>
+                  {renderStars(0, true, 'lg')}
+                </div>
+                <span className="text-sm text-gray-600">
+                  {userRating ? 'Your rating: ' + userRating + ' stars' : 'Click to rate'}
+                </span>
+                {isRating && (
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin text-gray-500" />
+                )}
+              </div>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Product Image */}

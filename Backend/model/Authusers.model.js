@@ -51,7 +51,11 @@ const UserSchema=new mongoose.Schema({
  NationalId:{
     type:String,
     default:""
- }
+ },
+ isOnline: {
+   type: Boolean,
+   default: false
+ },
  
 
 

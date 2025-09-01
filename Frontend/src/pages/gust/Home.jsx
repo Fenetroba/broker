@@ -2,8 +2,10 @@ import Login from "@/auth/Login";
 import Footer from "@/components/gust/Footer";
 import Header from "@/components/gust/Header";
 import Hero from "@/components/gust/Hero";
-import HowToWork from "@/components/gust/HowToWork";
-import WhyChooseUs from "@/components/gust/WhyChooseUs";
+import Products from "@/components/gust/Products";
+
+
+
 import {
   Select,
   SelectContent,
@@ -11,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 import React from "react";
 
@@ -21,18 +24,25 @@ const Home = ({isAuthenticated ,user}) => {
         <div className="h-8 bg-[var(--two2m)] flex justify-end items-center">
           <Select className="text-white font-bold" >
             <SelectTrigger className="cursor-pointer my-2 bg-white  border-0 shadow-none">
-              <SelectValue placeholder="Language" className="bg-amber-50" />
+              <SelectValue placeholder="Language 🌎" className="bg-amber-50" />
             </SelectTrigger>
             <SelectContent className="bg-white text-[var(--parent1)] border-0">
-              <SelectItem value="light">አማርኛ</SelectItem>
-              <SelectItem value="dark">Eng</SelectItem>
+              <SelectItem value="Amharic">አማርኛ </SelectItem>
+              <SelectItem value="Aoromo">AFan Oromo</SelectItem>
+              <SelectItem value="Tigray">Tigray</SelectItem>
+              <SelectItem value="Eng">Eng</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <Header isAuthenticated={isAuthenticated} user={user}/>
         <Hero />
-        <HowToWork/>
-        <WhyChooseUs/>
+       
+           
+       
+                  
+                  <Products/>
+             
+ 
         <div className="mt-[] relative">
           <Footer />
         </div>

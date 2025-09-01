@@ -29,7 +29,6 @@ import Nofound from "./pages/Nofound/Nofound";
 import Header from "./components/LocalShoper/Sidebar";
 import MyProduct from "./pages/LocalShoper/MyProduct";
 import About from "./pages/gust/AboutUs";
-import How_To_Work from "./pages/gust/How_To_Work";
 import Orders from "./pages/LocalShoper/Orders";
 import Earnings from "./pages/LocalShoper/Earnings";
 import Inbox from "./pages/LocalShoper/Inbox";
@@ -40,6 +39,7 @@ import CityShop_Inbox from "./pages/CityShope/CityShop_Inbox";
 import Find_products from "./pages/CityShope/Find_products";
 import Order from "./pages/CityShope/Order";
 import { Button } from "./components/ui/button";
+import HowToWork from "./pages/gust/HowToWork";
 
 
 
@@ -72,7 +72,7 @@ function App({children}) {
         />
         <Route path="contactus" element={<ContactUs />} />
         <Route path="about" element={<About />} />
-        <Route path="how-to-work" element={<How_To_Work />} />
+        <Route path="how-to-work" element={<HowToWork />} />
         <Route
           path="/auth"
           element={

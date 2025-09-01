@@ -3,7 +3,7 @@ import multer from "multer";
 import path from 'path';
 const router = express.Router();
 import { protectRoute } from "../middleware/Auth_user.Middleware.js";
-import { createProduct, getProductById, getProducts, updateProduct, deleteProduct } from "../controller/Product.Controller.js";
+import { createProduct, getProductById, getProducts, updateProduct, deleteProduct,likeProduct } from "../controller/Product.Controller.js";
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -49,5 +49,6 @@ router.get("/get-products",getProducts)
 router.get("/get-product/:id",getProductById)
 router.put("/update-product/:id",updateProduct)
 router.delete("/delete-product/:id",deleteProduct)
+router.put("/like-product/:id",likeProduct)
 
 export default router

@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import PriverPolicy from "./FooterComponents/PriverPolicy";
+import RefundPolicy from "./FooterComponents/RefundPolicy";
+import TermsOfUse from "./FooterComponents/TermsOfUse";
+import FAQ from "./FooterComponents/FAQ";
+import Location from "./FooterComponents/Location";
 
 const Footer = () => {
   return (
@@ -28,11 +33,11 @@ const Footer = () => {
                 <span>info@fationLink.com</span>
               </Link>
             </li>
-            <li>
-              <Link to="/" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
-                <MapPinned className="w-5 h-5" />
-                <span>Location</span>
-              </Link>
+            <li className="flex">
+            
+                <MapPinned className="" />
+                <span className=" -ml-2"><Location/></span>
+       
             </li>
           </ul>
         </nav>
@@ -40,13 +45,13 @@ const Footer = () => {
         <nav className="flex-1 min-w-[180px] mb-6 md:mb-0">
           <h2 className="text-lg font-bold mb-3">Public Relations</h2>
           <ul className="space-y-2">
-            <li>
-              <Link to="/faq" className="hover:text-[#62c022] transition-colors flex">
-                <FileQuestion className=" mr-2"/><span>Frequently Asked Questions</span>
-              </Link>
+            <li className="flex">
+              
+                <FileQuestion className=" -mr-2"/><span><FAQ/></span>
+           
             </li>
             <li>
-              <Link to="/contact" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
+              <Link to="/contactus" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
                 <Contact className="w-5 h-5 mr-1" />
                 <span>Contact Us</span>
               </Link>
@@ -60,19 +65,19 @@ const Footer = () => {
             <li>
               <Link to="/privacy" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
                 <PanelTopInactive className="w-5 h-5" />
-                <span>Privacy Policy</span>
+                <span><PriverPolicy/></span>
               </Link>
             </li>
             <li>
               <Link to="/refund" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
                 <MapPinned className="w-5 h-5" />
-                <span>Refund Policy</span>
+                <span> <RefundPolicy/></span>
               </Link>
             </li>
             <li>
               <Link to="/terms" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
                 <TouchpadOff className="w-5 h-5" />
-                <span>Terms of Use</span>
+                <span><TermsOfUse/></span>
               </Link>
             </li>
           </ul>

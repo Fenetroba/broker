@@ -29,6 +29,7 @@ const messageSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+
   
   // Message type (text, order, business)
   messageType: {

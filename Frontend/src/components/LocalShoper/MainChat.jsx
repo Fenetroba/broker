@@ -1,4 +1,4 @@
-import { Paperclip, Send } from "lucide-react";
+import { EllipsisVertical, Paperclip, Send } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecentChats, fetchDirectMessages, sendDirectMessage, addMessage } from "../../store/chatSlice";
@@ -114,6 +114,8 @@ const MainChat = ({ messages: propMessages = [] }) => {
                   <span className="text-xs text-gray-500">
                     {isOnline ? 'Online' : 'Offline'}
                   </span>
+
+                  <EllipsisVertical className="relative r-0 w-3"/>
                 </div>
               
               </div>
@@ -147,7 +149,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
                 <div
                   className={`relative max-w-[90%] rounded-2xl px-3 py-2 text-sm shadow whitespace-pre-wrap break-words ${
                     isSender
-                      ? "bg-white pr-18 text-gray-900 border border-gray-200 "
+                      ? "bg-white pr-28 text-gray-900 border border-gray-200 "
                       : "bg-[var(--two3m)] pr-18 text-white"
                   }`}
                 >
@@ -157,11 +159,16 @@ const MainChat = ({ messages: propMessages = [] }) => {
                       {formatMessageTime(m?.createdAt)}
                     </span>
                     {isSender && (
-                      <span className={`text-xs ${m?.isRead ? 'text-blue-500' : 'text-gray-400'}`}>
-                        ✓{m?.isRead ? '✓' : ''}
-                      </span>
+                      <div className="flex">
+                        <span className={`text-xs ${m?.isRead ? 'text-blue-500' : 'text-gray-400'}`}>
+                          ✓{m?.isRead ? '✓' : ''}
+                       
+                        </span>
+                      
+                      </div>
                     )}
                   </div>
+                      
                 </div>
               </div>
             );

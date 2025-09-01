@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Heroimg1 from "../../assets/Hero2.png";
-import Heroimg2 from "../../assets/Hero2.png";
+import Heroimg2 from "../../assets/Product1.jpg";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
