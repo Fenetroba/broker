@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import api from '@/lib/Axios';
 
+import View_details from '../LocalShoper/ProductDetail/View_details';
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch all products on component mount
-  useEffect(() => {
+  useEffect(() => { 
     const fetchProducts = async () => {
       try {
         setLoading(true);
@@ -46,8 +49,18 @@ const Products = () => {
     );
   }
 
+  const handleProductClick = (id) => {
+    setSelectedProductId(id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProductId(null);
+  };
   return (
-    <div className="p-6  mx-auto">
+    <div className="p-6 mx-auto">
+     
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold flex items-center gap-2">
          
@@ -69,6 +82,7 @@ const Products = () => {
           {likedProducts.map((product) => (
             <div 
               key={product._id || product.id} 
+              onClick={() => handleProductClick(product._id)}
               className="bg-white rounded-lg border w-[250px] border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
             >
               <div className="relative h-48 bg-gray-100">
@@ -89,6 +103,15 @@ const Products = () => {
                       {product.category}
                     </span>
                   )}
+                  <div className='w-40'>
+                  {isModalOpen && (
+        <View_details 
+          productId={selectedProductId} 
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      )}
+                  </div>
                 </div>
               </div>
             </div>

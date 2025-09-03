@@ -43,12 +43,12 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-router.use(protectRoute);
+// router.use(protectRoute);
 router.post("/create-product", upload.single('image'), createProduct);
-router.get("/get-products",getProducts)
+router.get("/get-products" ,getProducts)
 router.get("/get-product/:id",getProductById)
-router.put("/update-product/:id",updateProduct)
-router.delete("/delete-product/:id",deleteProduct)
-router.put("/like-product/:id",likeProduct)
+router.put("/update-product/:id",protectRoute,updateProduct)
+router.delete("/delete-product/:id",protectRoute,deleteProduct)
+router.put("/like-product/:id" ,likeProduct)
 
 export default router
