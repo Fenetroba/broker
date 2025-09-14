@@ -20,7 +20,7 @@ import {
 const items = [
   {
     title: "Home",
-    url: "/local_shop",
+    url: "/",
     icon: Home,
   },
   {

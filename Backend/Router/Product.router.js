@@ -43,8 +43,8 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// router.use(protectRoute);
-router.post("/create-product", upload.single('image'), createProduct);
+// Protect routes that require authentication
+router.post("/create-product", protectRoute, upload.single('image'), createProduct);
 router.get("/get-products" ,getProducts)
 router.get("/get-product/:id",getProductById)
 router.put("/update-product/:id",protectRoute,updateProduct)

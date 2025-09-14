@@ -3,12 +3,15 @@ import auth from './AuthSlice';
 import chat from './chatSlice';
 import products from './ProductSlice';
 import orders from './OrderSlice';
+import users from './UsersSlice';
 
 export const store = configureStore({
   reducer: {
     auth:auth,
     chat:chat,
     products:products,
+    users:users,
     orders:orders
+
   },
 });

@@ -2,7 +2,8 @@ import Login from "@/auth/Login";
 import Footer from "@/components/gust/Footer";
 import Header from "@/components/gust/Header";
 import Hero from "@/components/gust/Hero";
-import Products from "@/components/gust/Products";
+import New_products from "@/components/gust/New_products";
+import Popular_Products from "@/components/gust/Popular_Products";
 
 
 
@@ -39,8 +40,17 @@ const Home = ({isAuthenticated ,user}) => {
        
            
        
-                  
-                  <Products/>
+                  <div className="sm:flex m-4">
+                    <div className="shadow-sm  p-5">
+                         <h2>Local Sellers</h2>
+
+                  </div>
+                <div className=" shadow m-2 w-[88%]">
+                      
+                <Popular_Products/>
+                  <New_products/>
+                </div>
+                  </div>
              
  
         <div className="mt-[] relative">

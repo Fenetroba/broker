@@ -14,19 +14,16 @@ import {
 
 } from "@/components/ui/sidebar";
 import { FaCity } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 // Menu items.
 const items = [
   {
     title: "Home",
-    url: "/city_shop/home",
+    url: "/",
     icon: Home,
   },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
+
   {
     title: "Products",
     url: "#",
@@ -34,7 +31,7 @@ const items = [
   },
   {
     title: "Users",
-    url: "#",
+    url: "/admin/userList",
     icon: User,
   },
   {
@@ -57,7 +54,7 @@ const Header = () => {
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild className='hover:bg-[var(--two5m)] flex  text-[var(--two5m)]'>
-                  <a href={item.url} >
+                  <Link to={item.url} >
                     <item.icon  /> 
                   <span  className="flex ">{item.title}
     {
@@ -69,7 +66,7 @@ const Header = () => {
                   </span>
                    
                 
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

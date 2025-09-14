@@ -46,14 +46,23 @@ export const likeProduct = createAsyncThunk(
   'products/like',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/product/like-product/${productId}`);
+      console.log('Liking product with ID:', productId);
+      const response = await axios.put(`/product/like-product/${productId}`, {}, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Like response:', response.data);
+      if (!response.data) {
+        throw new Error('No data received from server');
+      }
       return { productId, isLiked: response.data.isLiked };
     } catch (error) {
+      console.error('Error in likeProduct:', error);
       return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
 );
-
 
 export const updateProduct = createAsyncThunk(
   'products/update',
@@ -83,6 +92,7 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+
 export const updateProductRating = createAsyncThunk(
   'products/updateRating',
   async ({ productId, rating }, { rejectWithValue }) => {
@@ -94,14 +104,39 @@ export const updateProductRating = createAsyncThunk(
     }
   }
 );
+// fetch products from the last 48 hours
+export const fetchNewProducts = createAsyncThunk(
+  'products/fetchNew',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/product/get-products");
+      const productList = Array.isArray(response.data) ? response.data : response.data?.products || [];
+      
+      // Filter products from the last 48 hours
+      const fortyEightHoursAgo = new Date();
+      fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+      
+      const newProducts = productList.filter(product => {
+        const productDate = new Date(product.createdAt || product.dateAdded);
+        return productDate > fortyEightHoursAgo;
+      });
 
+      return newProducts; // Return the filtered products
+    } catch (err) {
+      console.error('Failed to fetch new products:', err);
+      return rejectWithValue('Failed to load new products');
+    }
+  }
+);
 const productSlice = createSlice({
   name: 'products',
   initialState: {
     items: [],
+    NewPoducts:[],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
-    currentProduct: null
+    currentProduct: null,
+    LoadingNewPoduct:false,
   },
   reducers: {
     setCurrentProduct: (state, action) => {
@@ -137,6 +172,19 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.payload?.message || 'Failed to fetch products';
+      })
+    // fetch new products
+      .addCase(fetchNewProducts.pending, (state) => {
+        state.LoadingNewPoduct = true;
+      })
+      .addCase(fetchNewProducts.fulfilled, (state, action) => {
+        state.LoadingNewPoduct = false;
+        state.NewPoducts = action.payload;
+        console.log(  state.NewPoducts )
+      })
+      .addCase(fetchNewProducts.rejected, (state, action) => {
+        state.LoadingNewPoduct = false;
         state.error = action.payload?.message || 'Failed to fetch products';
       })
 

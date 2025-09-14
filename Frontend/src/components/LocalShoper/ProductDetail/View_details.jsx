@@ -16,9 +16,9 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 // import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
-const View_details = ({ productId }) => {
+const View_details = ({ productId, isOpen, onClose }) => {
   const { currentProduct, status } = useSelector(state => state.products);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setIsOpen] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [isRating, setIsRating] = useState(false);
@@ -87,22 +87,30 @@ const View_details = ({ productId }) => {
     });
   };
 
+  // Use the controlled isOpen prop if provided, otherwise use internal state
+  const sheetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
+  
+  const handleOpenChange = (open) => {
+    if (!open && onClose) {
+      onClose();
+    }
+    if (isOpen === undefined) {
+      setIsOpen(open);
+    }
+  };
+
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-[70%] text-xs h-8 cursor-pointer hover:bg-[var(--two3m)]"
-          onClick={() => setIsOpen(true)}
-        >
-          View Details
-        </Button>
-      </SheetTrigger>
+    <Sheet open={sheetOpen} onOpenChange={handleOpenChange}>
       <SheetContent 
         side="top" 
         className="w-full max-w-6xl mx-auto h-[90vh] overflow-y-auto bg-white z-[9999]"
-        aria-label="Product details"
+        onInteractOutside={(e) => {
+          // Prevent closing when clicking on the rating stars
+          if (e.target.closest('.rating-stars')) {
+            e.preventDefault();
+          }
+        }}
+        // aria-label="Product details"
       >
         {status === 'loading' ? (
           <>
@@ -150,7 +158,7 @@ const View_details = ({ productId }) => {
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <h3 className="text-lg font-medium mb-2">Rate this product</h3>
               <div className="flex items-center space-x-2">
-                <div className="flex" onMouseLeave={() => setHoverRating(0)}>
+                <div className="flex rating-stars" onMouseLeave={() => setHoverRating(0)}>
                   {renderStars(0, true, 'lg')}
                 </div>
                 <span className="text-sm text-gray-600">
@@ -163,17 +171,36 @@ const View_details = ({ productId }) => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Product Image */}
-              <div className="bg-gray-100 rounded-lg overflow-hidden">
-                <img
-                  src={currentProduct.image || 'https://via.placeholder.com/500x500?text=No+Image'}
-                  alt={currentProduct.name}
-                  className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://via.placeholder.com/500x500?text=No+Image';
-                  }}
-                />
+              {/* Product Image with Zoom Effect */}
+              <div className="relative bg-gray-100 rounded-lg overflow-hidden group h-[400px]">
+                <div className="relative w-full h-full overflow-hidden">
+                  <img
+                    src={currentProduct.image || 'https://via.placeholder.com/500x500?text=No+Image'}
+                    alt={currentProduct.name}
+                    className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out group-hover:scale-150"
+                    style={{
+                      transformOrigin: 'center center',
+                      willChange: 'transform',
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
+                    onMouseMove={(e) => {
+                      const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                      const x = ((e.clientX - left) / width) * 100;
+                      const y = ((e.clientY - top) / height) * 100;
+                      e.currentTarget.style.transformOrigin = `${x}% ${y}%`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transformOrigin = 'center center';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://via.placeholder.com/500x500?text=No+Image';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
               </div>
 
               {/* Product Details */}

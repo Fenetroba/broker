@@ -31,15 +31,29 @@ import View_details from "./View_details";
 
 const ListProducts = () => {
   const dispatch = useDispatch();
-  const {
-    items: products = [],
-    status,
-    error,
-  } = useSelector((state) => ({
-    items: state.products.items || [],
-    status: state.products.status,
-    error: state.products.error,
-  }));
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  const handleViewDetails = (product) => {
+    setSelectedProduct(product);
+    setIsDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setIsDetailsOpen(false);
+    setSelectedProduct(null);
+  };
+  const { products, status, error } = useSelector(
+    (state) => ({
+      products: state.products.items || [],
+      status: state.products.status,
+      error: state.products.error,
+    }),
+    (prev, next) => 
+      prev.products === next.products && 
+      prev.status === next.status && 
+      prev.error === next.error
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,7 +117,7 @@ const ListProducts = () => {
       <div className=" mx-auto p-4 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
-            <Card key={index} className="h-full border-0 shadow-2xl flex flex-col">
+            <Card key={index} className="h-full border-0 shadow-sm flex flex-col">
               <Skeleton className="h-48 w-full rounded-t-lg" />
               <CardHeader>
                 <Skeleton className="h-6 w-3/4" />
@@ -186,7 +200,8 @@ const ListProducts = () => {
             {currentProducts.map((product) => (
               <Card
                 key={product._id}
-                className="h-full  flex border-0 flex-col shadow-emerald-900 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                className="h-full flex border-0 flex-col shadow-emerald-900 shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+                onClick={() => handleViewDetails(product)}
               >
                 <div className="relative aspect-square overflow-hidden">
                   <img
@@ -243,7 +258,11 @@ const ListProducts = () => {
                 <CardFooter className="text-[var(--two5m)] pt-0  bg-[var(--two2m)]  p-1 flex space-x-1">
               
                    
-                      <View_details productId={product?._id || product.id} />
+                      <View_details 
+                        productId={product?._id || product.id}
+                        isOpen={isDetailsOpen && selectedProduct?._id === product._id}
+                        onClose={closeDetails}
+                      />
 
                   <AlertDialog open={deleteDialogOpen && productToDelete === product._id} onOpenChange={setDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>

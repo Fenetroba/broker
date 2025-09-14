@@ -24,6 +24,9 @@ const allowedPages = [
   "/city_shop/inbox",
   "/city_shop/find-products",
   "/city_shop/order",
+
+  //
+  '/admin/userList'
 ];
 
 const PageProtector = ({ isAuthenticated, children, user }) => {
@@ -63,6 +66,11 @@ const PageProtector = ({ isAuthenticated, children, user }) => {
   // For role-specific pages, check if user has access
   if (isAuthenticated && user && user.role) {
     const userHomePath = roleRedirects[user.role];
+    
+    // Special case: admin users can access admin pages
+    if (user.role === 'admin' && location.pathname.startsWith('/admin')) {
+      return <>{children}</>;
+    }
     
     // If user is trying to access their own role's pages, allow it
     if (userHomePath && location.pathname.startsWith(userHomePath)) {

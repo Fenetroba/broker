@@ -40,7 +40,7 @@ import Find_products from "./pages/CityShope/Find_products";
 import Order from "./pages/CityShope/Order";
 import { Button } from "./components/ui/button";
 import HowToWork from "./pages/gust/HowToWork";
-
+import UsersList from './pages/Admin/usersList'
 
 
 function App({children}) {
@@ -120,7 +120,9 @@ function App({children}) {
           {/* Order details route */}
           <Route path="order/:id" element={<Order />} />
         </Route>
-        {/* city shoper Page  */}
+
+
+        {/* admin Page  */}
 
         <Route
           path="/admin"
@@ -131,6 +133,7 @@ function App({children}) {
           }
         >
           <Route path="home" element={<AdminHome />} />
+          <Route path="userList" element={<UsersList />} />
     
         </Route>
 

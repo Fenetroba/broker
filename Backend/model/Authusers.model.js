@@ -17,7 +17,7 @@ const UserSchema=new mongoose.Schema({
  },
  role:{
     type:String,
-    enum:['admin','CityShop','LocalShop'],
+    enum:['admin','CityShop','LocalShop','superAdmin'],
     required:true
  },
  profilePic:{

@@ -17,7 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
 import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { LogOut } from "@/store/AuthSlice";
 const Hero = () => {
+const dispatch = useDispatch();
+const LogoutHandler = () => {
+  dispatch(LogOut());
+};
+
   return (
     <section>
       <div className=" shadow flex justify-between items-center pr-10">
@@ -56,7 +63,7 @@ const Hero = () => {
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem className="  ">
-                <Button className="cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900">
+                <Button onClick={LogoutHandler} className="cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900">
                   Log Out{" "}
                 </Button>
               </DropdownMenuItem>
