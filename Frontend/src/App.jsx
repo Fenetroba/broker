@@ -41,6 +41,7 @@ import Order from "./pages/CityShope/Order";
 import { Button } from "./components/ui/button";
 import HowToWork from "./pages/gust/HowToWork";
 import UsersList from './pages/Admin/usersList'
+import UserDetailsInfo from './pages/Admin/UserDetailsInfo'
 
 
 function App({children}) {
@@ -132,8 +133,9 @@ function App({children}) {
             </PageProtector>
           }
         >
-          <Route path="home" element={<AdminHome />} />
+          <Route path="home" element={<AdminHome user={user} />} />
           <Route path="userList" element={<UsersList />} />
+          <Route path="user/:id" element={<UserDetailsInfo />} />
     
         </Route>
 

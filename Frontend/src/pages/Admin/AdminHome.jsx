@@ -3,13 +3,13 @@ import Hero from '@/components/admin/Hero'
 import React from 'react'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
-const AdminHome = () => {
+const AdminHome = ({user}) => {
   return (
 
      <div className='relative overflow-hidden '>
      <SidebarProvider>
      <div className="flex-none">
-       <Header />
+       <Header user={user}/>
      </div>
          <SidebarTrigger className='bg-[var(--two3m)] cursor-pointer rounded-2xl'/>
      <div className="flex-1 sm:p-6 p-1">

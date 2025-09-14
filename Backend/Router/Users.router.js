@@ -6,7 +6,8 @@ import {
   deleteUser, 
   toggleUserStatus, 
   searchUsers, 
-  getUsersByRole 
+  getUsersByRole,
+  VerfiyPasswordForDeletUser
 } from "../controller/Users.js";
 import { protectRoute } from "../middleware/Auth_user.Middleware.js";
 
@@ -36,5 +37,8 @@ router.get("/:id", getUserById);                 // GET /api/users/:id - Get use
 router.put("/:id", updateUser);                  // PUT /api/users/:id - Update user
 router.delete("/:id", deleteUser);               // DELETE /api/users/:id - Delete user
 router.patch("/:id/toggle-status", toggleUserStatus); // PATCH /api/users/:id/toggle-status - Toggle user status
+
+// Password verification route
+router.post("/verify-password", VerfiyPasswordForDeletUser); // POST /api/users/verify-password - Verify admin password
 
 export default router;

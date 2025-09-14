@@ -40,7 +40,7 @@ const EditProfile = () => {
     companyWebsite: user?.companyWebsite || "",
     businessRegistrationNO: user?.businessRegistrationNO || "",
     taskLicence: user?.taskLicence || "",
-    nationalId: user?.nationalId || "",
+    nationalId: user?.NationalId || "",
   });
 
 

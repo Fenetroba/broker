@@ -87,6 +87,18 @@ export const getUsersByRole = createAsyncThunk(
   }
 );
 
+export const verifyAdminPassword = createAsyncThunk(
+  'users/verifyAdminPassword',
+  async (password, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`/users/verify-password`, { password });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Password verification failed');
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   users: [],
@@ -96,7 +108,12 @@ const initialState = {
   error: null,
   searchQuery: '',
   selectedRole: 'all',
-  totalUsers: 0
+  totalUsers: 0,
+  passwordVerification: {
+    loading: false,
+    error: null,
+    verified: false
+  }
 };
 
 // Users slice
@@ -267,6 +284,23 @@ const usersSlice = createSlice({
       .addCase(getUsersByRole.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      
+      // Verify admin password
+      .addCase(verifyAdminPassword.pending, (state) => {
+        state.passwordVerification.loading = true;
+        state.passwordVerification.error = null;
+        state.passwordVerification.verified = false;
+      })
+      .addCase(verifyAdminPassword.fulfilled, (state, action) => {
+        state.passwordVerification.loading = false;
+        state.passwordVerification.verified = true;
+        state.passwordVerification.error = null;
+      })
+      .addCase(verifyAdminPassword.rejected, (state, action) => {
+        state.passwordVerification.loading = false;
+        state.passwordVerification.verified = false;
+        state.passwordVerification.error = action.payload;
       });
   }
 });

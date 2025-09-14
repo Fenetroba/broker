@@ -1,5 +1,5 @@
 import AuthUser from "../model/Authusers.model.js";
-
+import bcrypt from 'bcrypt';
 // Get all users (Admin only)
 export const getAllUsers = async (req, res) => {
   try {
@@ -193,6 +193,61 @@ export const getUsersByRole = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error retrieving users by role",
+      error: error.message
+    });
+  }
+};
+export const VerfiyPasswordForDeletUser = async (req, res) => {
+  const { password } = req.body;
+  
+  try {
+    // Get the current admin user from the request (set by middleware)
+    const adminUser = req.user;
+    
+    if (!adminUser) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Authentication required" 
+      });
+    }
+
+    // Check if the user is an admin
+    if (adminUser.role !== 'admin' && adminUser.role !== 'superAdmin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Admin privileges required" 
+      });
+    }
+
+    // Fetch the user with password from database (middleware excludes password)
+    const userWithPassword = await AuthUser.findById(adminUser._id).select('+password');
+    
+    if (!userWithPassword) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Verify the password
+    const isMatch = await bcrypt.compare(password, userWithPassword.password);
+    
+    if (isMatch) {
+      res.status(200).json({
+        success: true,
+        message: "Password verified successfully"
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Incorrect password"
+      });
+    }
+  } catch (error) {
+    console.error('Password verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Password verification failed",
       error: error.message
     });
   }

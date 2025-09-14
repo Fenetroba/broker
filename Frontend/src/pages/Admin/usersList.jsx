@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { 
   fetchAllUsers, 
   deleteUser, 
@@ -8,12 +9,25 @@ import {
   setSearchQuery,
   setSelectedRole,
   filterUsers,
-  clearError
+  clearError,
+  verifyAdminPassword
 } from '../../store/UsersSlice';
-import { Search, Filter, MoreVertical, UserCheck, UserX, Trash2, Edit } from 'lucide-react';
+import { Search, Filter, MoreVertical, UserCheck, UserX, Trash2, Edit, Eye } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../../components/ui/alert-dialog';
 
 const UsersList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { 
     users, 
     filteredUsers, 
@@ -25,6 +39,11 @@ const UsersList = () => {
   } = useSelector((state) => state.users);
 
   const [showActions, setShowActions] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -43,14 +62,66 @@ const UsersList = () => {
     dispatch(setSelectedRole(role));
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      dispatch(deleteUser(userId));
+
+
+ 
+  const handleToggleStatus = (userId) => {
+    dispatch(toggleUserStatus(userId));
+  };
+
+  const handleViewUserDetails = (userId) => {
+    navigate(`/admin/user/${userId}`);
+  };
+
+  const handleDeleteClick = (userId) => {
+    setUserToDelete(userId);
+    setDeleteDialogOpen(true);
+    setShowActions(null); // Close actions dropdown
+  };
+
+  const handleDeleteConfirm = () => {
+    setDeleteDialogOpen(false);
+    setPasswordDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setUserToDelete(null);
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!adminPassword.trim()) {
+      setPasswordError('Password is required');
+      return;
+    }
+
+    try {
+      // Verify password with backend
+      const result = await dispatch(verifyAdminPassword(adminPassword));
+      
+      if (verifyAdminPassword.fulfilled.match(result)) {
+        // Password verified successfully, proceed with deletion
+        if (userToDelete) {
+          dispatch(deleteUser(userToDelete));
+          setPasswordDialogOpen(false);
+          setAdminPassword('');
+          setPasswordError('');
+          setUserToDelete(null);
+        }
+      } else {
+        // Password verification failed
+        setPasswordError(result.payload || 'Incorrect password');
+      }
+    } catch (error) {
+      setPasswordError('Password verification failed');
     }
   };
 
-  const handleToggleStatus = (userId) => {
-    dispatch(toggleUserStatus(userId));
+  const handlePasswordCancel = () => {
+    setPasswordDialogOpen(false);
+    setAdminPassword('');
+    setPasswordError('');
+    setUserToDelete(null);
   };
 
   const getRoleBadgeColor = (role) => {
@@ -77,8 +148,8 @@ const UsersList = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center  h-[100vh]">
+        <div className="animate-spin rounded-full h-17 w-18 border-b-15 border-green-600"></div>
       </div>
     );
   }
@@ -169,7 +240,8 @@ const UsersList = () => {
               </tr>
             ) : (
               filteredUsers.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
+                (user.role!=='admin' && user.role!=='supperadmin') &&(
+                <tr key={user._id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleViewUserDetails(user._id)}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
@@ -202,7 +274,10 @@ const UsersList = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="relative">
                       <button
-                        onClick={() => setShowActions(showActions === user._id ? null : user._id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowActions(showActions === user._id ? null : user._id);
+                        }}
                         className="text-gray-400 hover:text-gray-600"
                       >
                         <MoreVertical className="w-4 h-4" />
@@ -212,21 +287,30 @@ const UsersList = () => {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                           <div className="py-1">
                             <button
-                              onClick={() => handleToggleStatus(user._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewUserDetails(user._id);
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleStatus(user._id);
+                              }}
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               {user.isOnline ? <UserX className="w-4 h-4 mr-2" /> : <UserCheck className="w-4 h-4 mr-2" />}
                               {user.isOnline ? 'Deactivate' : 'Activate'}
                             </button>
                             <button
-                              onClick={() => {/* Add edit functionality */}}
-                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit User
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(user._id);
+                              }}
                               className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -238,6 +322,7 @@ const UsersList = () => {
                     </div>
                   </td>
                 </tr>
+                )
               ))
             )}
           </tbody>
@@ -251,6 +336,83 @@ const UsersList = () => {
           {(searchQuery || selectedRole !== 'all') && ' (filtered)'}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this user? This action cannot be undone. 
+              This will permanently remove the user from the system and all their data will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={handleDeleteCancel}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+            >
+              Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Password Confirmation Dialog */}
+      <AlertDialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              To delete this user, please enter your admin password to confirm this action.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="py-4">
+            <div className="space-y-2">
+              <label htmlFor="adminPassword" className="text-sm font-medium text-gray-700">
+                Admin Password
+              </label>
+              <input
+                id="adminPassword"
+                type="password"
+                value={adminPassword}
+                onChange={(e) => {
+                  setAdminPassword(e.target.value);
+                  setPasswordError('');
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Enter your admin password"
+                autoComplete="current-password"
+              />
+              {passwordError && (
+                <p className="text-sm text-red-600">{passwordError}</p>
+              )}
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={handlePasswordCancel}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handlePasswordSubmit}
+              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+            >
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
