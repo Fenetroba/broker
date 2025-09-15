@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchUserById, clearError, deleteUser, verifyAdminPassword } from "../../store/UsersSlice";
+import { fetchUserById, clearError, deleteUser, verifyAdminPassword, updateUser } from "../../store/UsersSlice";
 import { toast } from "sonner";
 
 import {
@@ -102,6 +102,24 @@ const UserDetailsInfo = () => {
     setAdminPassword('');
     setPasswordError('');
   };
+
+  const handleToggleVerified = async () => {
+    if (!currentUser?._id) return;
+    try {
+      const targetValue = !Boolean(currentUser.isverified);
+      const result = await dispatch(updateUser({ userId: currentUser._id, userData: { isverified: targetValue } }));
+      if (updateUser.fulfilled.match(result)) {
+        toast.success(targetValue ? "User verified" : "Verification removed", {
+          style: { background: targetValue ? "#10B981" : "#F59E0B", color: "#fff" },
+        });
+        dispatch(fetchUserById(currentUser._id));
+      } else {
+        toast.error(result.payload || "Failed to update verification");
+      }
+    } catch (err) {
+      toast.error("Failed to update verification");
+    }
+  };
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":
@@ -181,9 +199,12 @@ const UserDetailsInfo = () => {
         </div>
 
         <div className="flex gap-2">
-          <button className="cursor-pointer flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
+        
+          <button
+            onClick={handleToggleVerified}
+            className="flex cursor-pointer items-center px-4 py-2 bg-blue-300 text-white rounded-lg hover:bg-blue-400"
+          >
+            {currentUser?.isverified ? 'Unverify' : 'Verify'}
           </button>
           <button
             onClick={handleDeleteClick}
@@ -229,6 +250,19 @@ const UserDetailsInfo = () => {
                 month: "long",
                 day: "numeric",
               })}
+            </div>
+            <div className="mt-3">
+              {currentUser?.isverified ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  Verified
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                  <XCircle className="w-4 h-4 mr-1" />
+                  Not Verified
+                </span>
+              )}
             </div>
           </div>
         </div>

@@ -12,7 +12,7 @@ import {
   clearError,
   verifyAdminPassword
 } from '../../store/UsersSlice';
-import { Search, Filter, MoreVertical, UserCheck, UserX, Trash2, Edit, Eye } from 'lucide-react';
+import { Search, Filter, MoreVertical, UserCheck, UserX, Trash2, Edit, Eye, Verified, ShieldX } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -223,6 +223,9 @@ const UsersList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Joined
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Is Verifyed
+              </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -231,7 +234,7 @@ const UsersList = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                   {searchQuery || selectedRole !== 'all' 
                     ? 'No users found matching your criteria' 
                     : 'No users found'
@@ -241,7 +244,7 @@ const UsersList = () => {
             ) : (
               filteredUsers.map((user) => (
                 (user.role!=='admin' && user.role!=='supperadmin') &&(
-                <tr key={user._id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleViewUserDetails(user._id)}>
+                <tr key={user._id} className="hover:bg-[var(--two5m)] cursor-pointer" onClick={() => handleViewUserDetails(user._id)}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
@@ -270,6 +273,9 @@ const UsersList = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowraptext-sm ">
+                    {user.isverified?<Verified className='text-green-400'/>:<ShieldX className='text-red-400'/>}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="relative">

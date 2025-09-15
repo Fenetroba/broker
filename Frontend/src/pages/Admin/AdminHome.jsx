@@ -2,7 +2,7 @@ import Header from '@/components/admin/Sidebar'
 import Hero from '@/components/admin/Hero'
 import React from 'react'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-
+import  banners from '../../assets/AdminBanner.png'
 const AdminHome = ({user}) => {
   return (
 
@@ -16,9 +16,14 @@ const AdminHome = ({user}) => {
        <div className="mb-4 ">
        </div>
        <Hero/>
+       <div>
+        <img src={banners} alt="banners" />
+    
+      </div>
      </div>
      </SidebarProvider>
      <div className=' bg-yellow-500 w-[550px] h-[550px]  shadow-2xl rounded-full absolute z-[-10] top-[-100px] right-[-100px]'></div>
+      
    </div>
   )
 }
