@@ -4,6 +4,7 @@ import chat from './chatSlice';
 import products from './ProductSlice';
 import orders from './OrderSlice';
 import users from './UsersSlice';
+import promotions from './PromotionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,7 @@ export const store = configureStore({
     chat:chat,
     products:products,
     users:users,
-    orders:orders
-
+    orders:orders,
+    promotions:promotions
   },
 });

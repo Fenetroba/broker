@@ -16,9 +16,9 @@ const AdminHome = ({user}) => {
        <div className="mb-4 ">
        </div>
        <Hero/>
-       <div>
-        <img src={banners} alt="banners" />
-    
+       <div className='sm:flex items-center'>
+        <img src={banners} alt="banners" className='' />
+     <h1 className='font-bold text-2xl md:text-4xl lg:text-5xl bg-[var(--two2m)] p-3 h-[150px] text-[var(--two5m)] rounded-t-2xl w-full'>Admin and Supporter</h1>
       </div>
      </div>
      </SidebarProvider>

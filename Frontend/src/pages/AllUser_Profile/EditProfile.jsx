@@ -22,13 +22,17 @@ import {
   Building,
   Globe,
   List,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { UpdateUserInformation } from "@/store/AuthSlice";
 
 const EditProfile = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, loading } = useSelector((state) => state.auth);
   const fileInputRef = useRef(null);
+  const nationalIdRef = useRef(null);
+  const taskLicenceRef = useRef(null);
 
   const [userData, setUserData] = useState({
     name: user?.name || "",
@@ -39,16 +43,58 @@ const EditProfile = () => {
     companyName: user?.companyName || "",
     companyWebsite: user?.companyWebsite || "",
     businessRegistrationNO: user?.businessRegistrationNO || "",
-    taskLicence: user?.taskLicence || "",
+    taskLicence: user?.TaskLicence || "",
     nationalId: user?.NationalId || "",
   });
 
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
 
-const dispatch=useDispatch()
+  // Form validation
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!userData.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+    
+    if (!userData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    if (!userData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^[\+]?[1-9][\d]{0,15}$/.test(userData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+    
+    if (userData.companyWebsite && !/^https?:\/\/.+/.test(userData.companyWebsite)) {
+      newErrors.companyWebsite = "Please enter a valid website URL (starting with http:// or https://)";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   // Handle file input change
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size must be less than 5MB');
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Please upload a valid image file (JPEG, PNG, or WebP)');
+        return;
+      }
+
       setUserData(prev => ({
         ...prev,
         [fieldName]: file
@@ -65,11 +111,43 @@ const dispatch=useDispatch()
         };
         reader.readAsDataURL(file);
       }
+      
+      // Clear any existing errors for this field
+      if (errors[fieldName]) {
+        setErrors(prev => ({
+          ...prev,
+          [fieldName]: undefined
+        }));
+      }
+    }
+  };
+
+  // Handle input change
+  const handleInputChange = (field, value) => {
+    setUserData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      toast.error('Please fix the errors before submitting');
+      return;
+    }
+    
+    setIsSubmitting(true);
     
     try {
       const formData = new FormData();
@@ -79,10 +157,13 @@ const dispatch=useDispatch()
         // Skip preview data
         if (key === 'profilePicPreview') return;
         
-        // Handle file uploads
+        // Handle file uploads - use correct field names for backend
         if (key === 'profilePic' || key === 'taskLicence' || key === 'nationalId') {
           if (userData[key] instanceof File) {
-            formData.append(key, userData[key]);
+            // Map frontend field names to backend field names
+            const backendFieldName = key === 'taskLicence' ? 'taskLicence' : 
+                                   key === 'nationalId' ? 'nationalId' : 'profilePic';
+            formData.append(backendFieldName, userData[key]);
           }
         } else {
           // Add other fields
@@ -103,13 +184,23 @@ const dispatch=useDispatch()
       if (UpdateUserInformation.fulfilled.match(resultAction)) {
         // Handle success
         toast.success('Profile updated successfully!');
+        // Clear any existing errors
+        setErrors({});
       } else if (UpdateUserInformation.rejected.match(resultAction)) {
         // Handle error
-        toast.error(resultAction.error.message || 'Failed to update profile');
+        const errorMessage = resultAction.error?.message || resultAction.payload?.message || 'Failed to update profile';
+        toast.error(errorMessage);
+        
+        // Set field-specific errors if available
+        if (resultAction.error?.field) {
+          setErrors({ [resultAction.error.field]: errorMessage });
+        }
       }
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('An error occurred while updating the profile');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -176,17 +267,25 @@ const dispatch=useDispatch()
                       className="text-sm font-semibold text-gray-700 flex items-center gap-2"
                     >
                       <User className="h-4 w-4" />
-                      Full Name
+                      Full Name *
                     </Label>
                     <Input
                       id="fullName"
                       name="name"
                       type="text"
                       value={userData.name}
-                      onChange={(e)=>setUserData({...userData,name:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-200 focus:ring-green-100 h-12"
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      className={`rounded-xl border-gray-400 focus:border-green-200 focus:ring-green-100 h-12 ${
+                        errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : ''
+                      }`}
                       placeholder="Enter your full name"
                     />
+                    {errors.name && (
+                      <div className="flex items-center gap-1 text-red-500 text-sm">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.name}
+                      </div>
+                    )}
                   </div>
 
                   {/* Email */}
@@ -196,115 +295,184 @@ const dispatch=useDispatch()
                       className="text-sm font-semibold text-gray-700 flex items-center gap-2"
                     >
                       <Mail className="h-4 w-4" />
-                      Email Address
+                      Email Address *
                     </Label>
                     <Input
                       id="email"
                       name="email"
                       type="email"
                       value={userData.email}
-                      onChange={(e)=>setUserData({...userData,email:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className={`rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12 ${
+                        errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : ''
+                      }`}
                       placeholder="Enter your email"
                     />
+                    {errors.email && (
+                      <div className="flex items-center gap-1 text-red-500 text-sm">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.email}
+                      </div>
+                    )}
                   </div>
 
                   {/* Phone */}
-
                   <div className="space-y-2">
                     <Label
                       htmlFor="phone"
                       className="text-sm font-semibold text-gray-700 flex items-center gap-2"
                     >
                       <Phone className="h-4 w-4" />
-                      Phone Number
+                      Phone Number *
                     </Label>
                     <Input
                       id="phone"
                       name="phone"
-                      type="text"
+                      type="tel"
                       value={userData.phone}
-                      onChange={(e)=>setUserData({...userData,phone:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className={`rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12 ${
+                        errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : ''
+                      }`}
                       placeholder="Enter your phone number"
                     />
+                    {errors.phone && (
+                      <div className="flex items-center gap-1 text-red-500 text-sm">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.phone}
+                      </div>
+                    )}
                   </div>
-                  {/*              Company Name */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 md:col-span-2">
                     <Label
-                      htmlFor="companyName"
+                      htmlFor="nationalId"
                       className="text-sm font-semibold text-gray-700 flex items-center gap-2"
                     >
-                      <Building className="h-4 w-4" />
-                      Company Name
+                      <IdCard className="h-4 w-4" />
+                      National ID
                     </Label>
-                    <Input
-                      id="companyName"
-                      name="companyName"
-                      type="text"
-                      value={userData.companyName}
-                      onChange={(e)=>setUserData({...userData,companyName:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
-                      placeholder="Enter your Company Name (Optional)"
-                    />
+                    <div className="flex items-center gap-4">
+                      <Input
+                        id="nationalId"
+                        type="file"
+                        name="nationalId"
+                        accept="image/*"
+                        ref={nationalIdRef}
+                        className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
+                        onChange={(e) => handleFileChange(e, 'nationalId')}
+                      />
+                      {userData.nationalId && typeof userData.nationalId === 'string' && (
+                        <div className="text-sm text-gray-600">
+                          Current: <span className="font-medium">Uploaded</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">Upload a clear image of your National ID (Max 5MB)</p>
                   </div>
-                  {/*  Company Website Link */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="companyWebsite"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <Globe className="h-4 w-4" />
-                      Company Website Link{" "}
-                      <p className="font-bold">(Optional)</p>
-                    </Label>
-                    <Input
-                      id="companyWebsite"
-                      name="companyWebsite"
-                      type="url"
-                      value={userData.companyWebsite}
-                      onChange={(e)=>setUserData({...userData,companyWebsite:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
-                      placeholder="Enter your Company Website Link (Optional)"
-                    />
-                  </div>
-                  {/*  Business Registration Number */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="businessRegistrationNO"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <List className="h-4 w-4" />
-                      Business Registration Number{" "}
-                      <p className="font-bold">(Optional)</p>
-                    </Label>
-                    <Input
-                      id="businessRegistrationNO"
-                      name="businessRegistrationNO"
-                      type="text"
-                      value={userData.businessRegistrationNO}
-                      onChange={(e)=>setUserData({...userData,businessRegistrationNO:e.target.value})}
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
-                      placeholder="Enter business registration number"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="taskLicence"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <List className="h-4 w-4" />
-                      Task Licence <p className="font-bold">(Optional)</p>
-                    </Label>
-                    <Input
-                      id="taskLicence"
-                      type="file"
-                      name="taskLicence"
-                      className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
-                      onChange={(e) => handleFileChange(e, 'taskLicence')}
-                      placeholder="Upload task licence"
-                    />
-                  </div>
+                  {/* Company Information - Only show for non-admin users */}
+                  {user?.role !== 'admin' && (
+                    <>
+                      {/* Company Name */}
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="companyName"
+                          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        >
+                          <Building className="h-4 w-4" />
+                          Company Name
+                        </Label>
+                        <Input
+                          id="companyName"
+                          name="companyName"
+                          type="text"
+                          value={userData.companyName}
+                          onChange={(e) => handleInputChange('companyName', e.target.value)}
+                          className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                          placeholder="Enter your Company Name (Optional)"
+                        />
+                      </div>
+
+                      {/* Company Website Link */}
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="companyWebsite"
+                          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        >
+                          <Globe className="h-4 w-4" />
+                          Company Website Link
+                          <span className="text-gray-500 font-normal">(Optional)</span>
+                        </Label>
+                        <Input
+                          id="companyWebsite"
+                          name="companyWebsite"
+                          type="url"
+                          value={userData.companyWebsite}
+                          onChange={(e) => handleInputChange('companyWebsite', e.target.value)}
+                          className={`rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12 ${
+                            errors.companyWebsite ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : ''
+                          }`}
+                          placeholder="https://example.com"
+                        />
+                        {errors.companyWebsite && (
+                          <div className="flex items-center gap-1 text-red-500 text-sm">
+                            <AlertCircle className="h-3 w-3" />
+                            {errors.companyWebsite}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Business Registration Number */}
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="businessRegistrationNO"
+                          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        >
+                          <List className="h-4 w-4" />
+                          Business Registration Number
+                          <span className="text-gray-500 font-normal">(Optional)</span>
+                        </Label>
+                        <Input
+                          id="businessRegistrationNO"
+                          name="businessRegistrationNO"
+                          type="text"
+                          value={userData.businessRegistrationNO}
+                          onChange={(e) => handleInputChange('businessRegistrationNO', e.target.value)}
+                          className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                          placeholder="Enter business registration number"
+                        />
+                      </div>
+
+                      {/* Task Licence */}
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="taskLicence"
+                          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        >
+                          <List className="h-4 w-4" />
+                          Task Licence
+                          <span className="text-gray-500 font-normal">(Optional)</span>
+                        </Label>
+                        <div className="flex items-center gap-4">
+                          <Input
+                            id="taskLicence"
+                            type="file"
+                            name="taskLicence"
+                            accept="image/*"
+                            ref={taskLicenceRef}
+                            className="rounded-xl border-gray-400 focus:border-green-500 focus:ring-green-500 h-12"
+                            onChange={(e) => handleFileChange(e, 'taskLicence')}
+                          />
+                          {userData.taskLicence && typeof userData.taskLicence === 'string' && (
+                            <div className="text-sm text-gray-600">
+                              Current: <span className="font-medium">Uploaded</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500">Upload a clear image of your Task Licence (Max 5MB)</p>
+                      </div>
+                    </>
+                  )}
+
                   {/* Location */}
                   <div className="space-y-2 md:col-span-2">
                     <Label
@@ -319,28 +487,12 @@ const dispatch=useDispatch()
                       type="text"
                       name="address"
                       value={userData.address}
-                      onChange={(e)=>setUserData({...userData,address:e.target.value})}
+                      onChange={(e) => handleInputChange('address', e.target.value)}
                       className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
                       placeholder="Enter your location"
                     />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label
-                      htmlFor="nationalId"
-                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
-                    >
-                      <IdCard className="h-4 w-4" />
-                      National Id
-                    </Label>
-                    <Input
-                      id="nationalId"
-                      type="file"
-                      name="nationalId"
-                      className="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 h-12"
-                      onChange={(e) => handleFileChange(e, 'nationalId')}
-                      placeholder="Upload national ID"
-                    />
-                  </div>
+               
                 </div>
 
                 {/* Action Buttons */}
@@ -350,15 +502,23 @@ const dispatch=useDispatch()
                     variant="outline"
                     className="rounded-full px-8 py-2 border-2 border-gray-300 text-gray-700 hover:bg-gray-100"
                     onClick={() => window.history.back()}
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="rounded-full px-8 py-2 bg-green-500 text-white hover:bg-green-600 disabled:opacity-50"
-                    disabled={!userData.name || !userData.email}
+                    className="rounded-full px-8 py-2 bg-green-500 text-white hover:bg-green-600 disabled:opacity-50 flex items-center gap-2"
+                    disabled={!userData.name || !userData.email || !userData.phone || isSubmitting}
                   >
-                    Save Changes
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
                   </Button>
                 </div>
               </form>

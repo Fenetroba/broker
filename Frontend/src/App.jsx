@@ -42,6 +42,7 @@ import { Button } from "./components/ui/button";
 import HowToWork from "./pages/gust/HowToWork";
 import UsersList from './pages/Admin/usersList'
 import UserDetailsInfo from './pages/Admin/UserDetailsInfo'
+import ProductsControlled from "./pages/Admin/ProductsControlled";
 
 
 function App({children}) {
@@ -136,6 +137,7 @@ function App({children}) {
           <Route path="home" element={<AdminHome user={user} />} />
           <Route path="userList" element={<UsersList />} />
           <Route path="user/:id" element={<UserDetailsInfo />} />
+          <Route path="products" element={<ProductsControlled />} />
     
         </Route>
 
