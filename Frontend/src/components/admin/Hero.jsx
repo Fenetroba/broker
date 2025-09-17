@@ -51,11 +51,11 @@ const dispatch=useDispatch()
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem  className=' cursor-pointer' onClick={() => navigate("/user/profile")}>Profile</DropdownMenuItem>
-            <DropdownMenuItem  className=' cursor-pointer'>Billing</DropdownMenuItem>
+    
             <DropdownMenuItem  className='  '>
               <Button onClick={LogoutHandler} className='cursor-pointer rounded-2xl bg-[var(--two2m)] text-white  hover:bg-green-900'>Log Out </Button>
             </DropdownMenuItem>
-            <DropdownMenuItem  className=' cursor-pointer'>Subscription</DropdownMenuItem>
+     
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

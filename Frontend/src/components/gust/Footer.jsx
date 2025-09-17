@@ -16,8 +16,8 @@ import { Link } from "react-router-dom";
 import PriverPolicy from "./FooterComponents/PriverPolicy";
 import RefundPolicy from "./FooterComponents/RefundPolicy";
 import TermsOfUse from "./FooterComponents/TermsOfUse";
-import FAQ from "./FooterComponents/FAQ";
 import Location from "./FooterComponents/Location";
+import Supporter from "./FooterComponents/Supporter";
 
 const Footer = () => {
   return (
@@ -44,18 +44,13 @@ const Footer = () => {
         {/* Public Relations */}
         <nav className="flex-1 min-w-[180px] mb-6 md:mb-0">
           <h2 className="text-lg font-bold mb-3">Public Relations</h2>
-          <ul className="space-y-2">
-            <li className="flex">
+          <ul className="space-y-0">
+            <li className="flex items-center">
               
-                <FileQuestion className=" -mr-2"/><span><FAQ/></span>
+                <FileQuestion className=" -mr-8"/><span><Supporter/></span>
            
             </li>
-            <li>
-              <Link to="/contactus" className="flex items-center gap-2 hover:text-[#62c022] transition-colors">
-                <Contact className="w-5 h-5 mr-1" />
-                <span>Contact Us</span>
-              </Link>
-            </li>
+            
           </ul>
         </nav>
         {/* Company */}

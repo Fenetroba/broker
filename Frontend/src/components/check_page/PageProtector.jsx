@@ -26,7 +26,8 @@ const allowedPages = [
   "/city_shop/order",
 
   //
-  '/admin/userList'
+  '/admin/userList',
+  '/admin/supporter'
 ];
 
 const PageProtector = ({ isAuthenticated, children, user }) => {

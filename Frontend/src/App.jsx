@@ -42,7 +42,8 @@ import { Button } from "./components/ui/button";
 import HowToWork from "./pages/gust/HowToWork";
 import UsersList from './pages/Admin/usersList'
 import UserDetailsInfo from './pages/Admin/UserDetailsInfo'
-import ProductsControlled from "./pages/Admin/ProductsControlled";
+import ProductsControlled from "./pages/Admin/DisplayProducts";
+// import SupporterPage from "./pages/Admin/SupporterPageNew";
 
 
 function App({children}) {
@@ -138,6 +139,7 @@ function App({children}) {
           <Route path="userList" element={<UsersList />} />
           <Route path="user/:id" element={<UserDetailsInfo />} />
           <Route path="products" element={<ProductsControlled />} />
+          {/* <Route path="supporter" element={<SupporterPage />} /> */}
     
         </Route>
 
