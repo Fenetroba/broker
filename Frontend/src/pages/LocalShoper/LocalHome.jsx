@@ -17,10 +17,7 @@ const Local_shop_Home = ({children,  isAuthenticated ,user}) => {
       </div>
           <SidebarTrigger className='bg-[var(--two3m)] cursor-pointer rounded-2xl'/>
       <div className="flex-1 sm:p-6 p-1">
-        <div className="mb-4 ">
-          <h1 className="text-2xl font-bold text-green-600">Local Shop Home Page</h1>
-          <p className="text-gray-600">Welcome to your local shop dashboard!</p>
-        </div>
+      
         <Hero/>
       </div>
     </SidebarProvider>

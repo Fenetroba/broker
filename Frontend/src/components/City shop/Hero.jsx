@@ -76,12 +76,13 @@ const LogoutHandler = () => {
       </div>
 
       {/* city shoper Banner */}
-      <div className="mt-4">
+      <div className="mt-4 ">
         <img
           src={BannerCity}
           alt="BannerCity"
-          className="cover sm:h-[50vh] w-full max-sm:h-[30vh]"
+          className="object-cover  max-sm:h-[400px] max-sm:mt-20  "
         />
+        <p className="text-4xl font-bold text-white absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-lg">City Shop</p>
       </div>
     </section>
   );
