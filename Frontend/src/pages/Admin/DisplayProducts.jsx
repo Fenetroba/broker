@@ -51,9 +51,9 @@ const ProductsControlled = () => {
         </div>
         
         <div className="flex-1 ml-0 transition-all duration-300 ease-in-out pl-[280px] p-8">
-          <div className="bg-white rounded-lg shadow p-6">
+         
             <ProductDisplay />
-          </div>
+         
         </div>
       </SidebarProvider>
     </div>
