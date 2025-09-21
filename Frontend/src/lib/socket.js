@@ -1,20 +1,118 @@
 import { io } from 'socket.io-client';
+import { store } from '@/store';
 
 // Create a singleton Socket.IO client
 let socket;
+
+// Track online status
+let isConnected = false;
+let connectListeners = [];
+let disconnectListeners = [];
+
+const setupSocketListeners = () => {
+  if (!socket) return;
+
+  socket.on('connect', () => {
+    console.log('Socket connected');
+    isConnected = true;
+    
+    // Notify all connect listeners
+    connectListeners.forEach(callback => callback());
+    
+    // Re-authenticate if we have a user
+    const { auth } = store.getState();
+    if (auth?.user?._id) {
+      socket.emit('user_online', auth.user._id);
+    }
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log('Socket disconnected:', reason);
+    isConnected = false;
+    
+    // Notify all disconnect listeners
+    disconnectListeners.forEach(callback => callback(reason));
+  });
+
+  socket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+  });
+
+  // Handle user status changes
+  socket.on('user_status_change', (data) => {
+    const { dispatch } = store;
+    dispatch({
+      type: 'chat/updateUserStatus',
+      payload: {
+        userId: data.userId,
+        isOnline: data.isOnline,
+        lastSeen: data.lastSeen
+      }
+    });
+  });
+};
 
 export function getSocket() {
   if (!socket) {
     socket = io('http://localhost:5000', {
       withCredentials: true,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
     });
+    
+    setupSocketListeners();
   }
+  
   return socket;
+}
+
+export function addConnectListener(callback) {
+  if (typeof callback === 'function') {
+    connectListeners.push(callback);
+    
+    // If already connected, call the callback immediately
+    if (isConnected) {
+      callback();
+    }
+  }
+  
+  // Return cleanup function
+  return () => {
+    connectListeners = connectListeners.filter(cb => cb !== callback);
+  };
+}
+
+export function addDisconnectListener(callback) {
+  if (typeof callback === 'function') {
+    disconnectListeners.push(callback);
+  }
+  
+  // Return cleanup function
+  return () => {
+    disconnectListeners = disconnectListeners.filter(cb => cb !== callback);
+  };
+}
+
+export function isSocketConnected() {
+  return isConnected && socket?.connected;
+}
+
+export function notifyUserOnline(userId) {
+  if (socket?.connected && userId) {
+    socket.emit('user_online', userId);
+  }
+}
+
+export function getOnlineUsers(callback) {
+  if (socket?.connected && typeof callback === 'function') {
+    socket.emit('get_online_users');
+    socket.once('online_users_list', callback);
+  }
 }
 
 export default getSocket;

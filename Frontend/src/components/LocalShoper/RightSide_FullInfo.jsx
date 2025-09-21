@@ -74,8 +74,8 @@ const RightSide_FullInfo = () => {
               <div className="mt-4 space-y-2 w-full">
                 <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Status:</span>
-                  <span className={`text-sm font-medium ${selectedFriend.isVerified ? 'text-green-600' : 'text-red-600'}`}>
-                    {selectedFriend.isVerified ? 'Verified' : 'Not Verified'}
+                  <span className={`text-sm font-medium ${selectedFriend.isverified ? 'text-green-600' : 'text-red-600'}`}>
+                    {selectedFriend.isverified ? 'Verified' : 'Not Verified'}
                   </span>
                 </div>
                 

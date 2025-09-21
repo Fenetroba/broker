@@ -10,11 +10,11 @@ import {
 
 const UserList = () => {
   const dispatch = useDispatch();
-  const users = useSelector(selectCityShopUsers);
+  const users1 = useSelector(selectCityShopUsers);
   const loading = useSelector(selectCityShopLoading); 
   const error = useSelector(selectCityShopError);
   const selectedFriendId = useSelector((s) => s.auth?.selectedFriendId || null);
-
+const users=users1.filter(user=>user.isverified===true)
   const [query, setQuery] = useState('');
 
   useEffect(() => {

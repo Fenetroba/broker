@@ -1,13 +1,17 @@
-import { EllipsisVertical, Paperclip, Send } from "lucide-react";
+import { EllipsisVertical, Paperclip, Send, Circle } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRecentChats, fetchDirectMessages, sendDirectMessage, addMessage } from "../../store/chatSlice";
-import getSocket from "@/lib/socket";
-import { formatMessageTime } from "@/lib/utils";
+import { 
+  fetchRecentChats, 
+  fetchDirectMessages, 
+  sendDirectMessage, 
+  addMessage, 
+  updateUserStatus,
+  initializeSocketListeners
+} from "@/store/chatSlice";
+import { notifyUserOnline } from "@/lib/socket";
+import { formatMessageTime, formatLastSeen } from "@/lib/utils";
 
-// Simple chat view
-// - Sender (current user) messages on LEFT
-// - Receiver messages on RIGHT
 const MainChat = ({ messages: propMessages = [] }) => {
   const dispatch = useDispatch();
   const authUser = useSelector((s) => s.auth?.user || null);
@@ -39,13 +43,13 @@ const MainChat = ({ messages: propMessages = [] }) => {
 
   // Chronological display (oldest -> newest)
   const displayMessages = useMemo(() => {
-    const arr = Array.isArray(messages) ? [...messages] : []
+    const arr = Array.isArray(messages) ? [...messages] : [];
     return arr.sort((a, b) => {
-      const da = a?.createdAt ? new Date(a.createdAt).getTime() : 0
-      const db = b?.createdAt ? new Date(b.createdAt).getTime() : 0
-      return da - db
-    })
-  }, [messages])
+      const da = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const db = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return da - db;
+    });
+  }, [messages]);
 
   // Auto-scroll to bottom when messages update
   useEffect(() => {
@@ -55,7 +59,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
     }
   }, [displayMessages, chatLoading]);
 
-  // Socket.IO: join room and listen for incoming direct messages
+  // Socket.IO: join room and listen for incoming direct messages and user status updates
   useEffect(() => {
     const socket = getSocket();
     if (!currentUserId) return;
@@ -82,20 +86,30 @@ const MainChat = ({ messages: propMessages = [] }) => {
       }
     };
 
+    // Handle user status updates
+    const handleUserStatus = ({ userId, isOnline }) => {
+      if (String(userId) === String(selectedFriendId)) {
+        dispatch(updateFriendStatus({ userId, isOnline }));
+      }
+    };
+
     socket.on("direct_message", handleDirectMessage);
+    socket.on("userStatus", handleUserStatus);
+
     return () => {
       socket.off("direct_message", handleDirectMessage);
+      socket.off("userStatus", handleUserStatus);
     };
   }, [currentUserId, selectedFriendId, dispatch]);
 
-  const headerInitial = (selectedFriend?.name || selectedFriend?.email || 'U')?.slice(0,1)?.toUpperCase()
+  const headerInitial = (selectedFriend?.name || selectedFriend?.email || "U")?.slice(0, 1)?.toUpperCase();
   const isOnline = selectedFriend?.isOnline || false;
 
   return (
     <section className="relative h-full w-full flex flex-col min-h-0">
       <div className="h-full flex flex-col min-h-0">
         {/* Header with selected user's info */}
-        <div className="h-16 border-b  border-gray-200 bg-white flex items-center gap-3 px-4">
+        <div className="h-16 border-b border-gray-200 bg-white flex items-center gap-3 px-4">
           {selectedFriend ? (
             <>
               <div className="relative">
@@ -112,39 +126,29 @@ const MainChat = ({ messages: propMessages = [] }) => {
                     {selectedFriend?.name || "Unnamed"}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {isOnline ? 'Online' : 'Offline'}
+                    {isOnline ? "Online" : "Offline"}
                   </span>
-
-                  <EllipsisVertical className="relative r-0 w-3"/>
+                  <EllipsisVertical className="relative r-0 w-3" />
                 </div>
-              
               </div>
             </>
           ) : (
-            <div className="text-sm text-gray-600">
-              Select a user to start chatting
-            </div>
+            <div className="text-sm text-gray-600">Select a user to start chatting</div>
           )}
         </div>
         {/* Messages area */}
         <div ref={messagesContainerRef} className="flex-1 min-h-0 flex flex-col gap-2 p-4 pb-24 overflow-y-auto ">
           {chatLoading && (
-            <div className="text-center text-sm text-gray-500 py-4">
-              Loading messages...
-            </div>
+            <div className="text-center text-sm text-gray-500 py-4">Loading messages...</div>
           )}
           {displayMessages.map((m) => {
             const senderId = m?.sender?._id || m?.sender?.id || m?.sender;
             const isSender =
-              currentUserId &&
-              senderId &&
-              String(senderId) === String(currentUserId);
+              currentUserId && senderId && String(senderId) === String(currentUserId);
             return (
               <div
                 key={m?._id || m?.id}
-                className={`flex w-full ${
-                  isSender ? "justify-start" : "justify-end"
-                }`}
+                className={`flex w-full ${isSender ? "justify-start" : "justify-end"}`}
               >
                 <div
                   className={`relative max-w-[90%] rounded-2xl px-3 py-2 text-sm shadow whitespace-pre-wrap break-words ${
@@ -154,30 +158,25 @@ const MainChat = ({ messages: propMessages = [] }) => {
                   }`}
                 >
                   {m?.content || ""}
-                  <div className="flex items-center gap-1 absolute right-2 bottom-1"> 
-                    <span className={`text-[11px] ${isSender ? 'text-gray-500' : 'text-gray-200'}`}>
+                  <div className="flex items-center gap-1 absolute right-2 bottom-1">
+                    <span className={`text-[11px] ${isSender ? "text-gray-500" : "text-gray-200"}`}>
                       {formatMessageTime(m?.createdAt)}
                     </span>
                     {isSender && (
                       <div className="flex">
-                        <span className={`text-xs ${m?.isRead ? 'text-blue-500' : 'text-gray-400'}`}>
-                          ✓{m?.isRead ? '✓' : ''}
-                       
+                        <span className={`text-xs ${m?.isRead ? "text-blue-500" : "text-gray-400"}`}>
+                          ✓{m?.isRead ? "✓" : ""}
                         </span>
-                      
                       </div>
                     )}
                   </div>
-                      
                 </div>
               </div>
             );
           })}
           {messages.length === 0 && (
             <div className="text-center text-sm text-gray-500 py-8">
-              {selectedFriend
-                ? "No messages yet"
-                : "Pick a user from the list on the left"}
+              {selectedFriend ? "No messages yet" : "Pick a user from the list on the left"}
             </div>
           )}
         </div>
@@ -210,9 +209,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
             }}
             className="bg-white w-full px-4 outline-0 shadow h-10 rounded-md border border-gray-200"
             placeholder={
-              selectedFriend
-                ? "Type a message..."
-                : "Select a user to start chatting"
+              selectedFriend ? "Type a message..." : "Select a user to start chatting"
             }
             disabled={!selectedFriendId}
           />

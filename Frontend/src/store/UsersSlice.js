@@ -115,6 +115,14 @@ const initialState = {
     verified: false
   }
 };
+updateUserStatus: (state, action) => {
+      const { userId, isOnline } = action.payload;
+      const user = state.users.find((user) => user._id === userId);
+      if (user) {
+        user.isOnline = isOnline;
+      }
+    }
+  
 
 // Users slice
 const usersSlice = createSlice({
@@ -310,7 +318,8 @@ export const {
   setSearchQuery,
   setSelectedRole,
   filterUsers,
-  clearUsers
+  clearUsers,
+  updateUserStatus
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

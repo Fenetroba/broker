@@ -37,7 +37,7 @@ const UsersList = () => {
     selectedRole, 
     totalUsers 
   } = useSelector((state) => state.users);
-
+console.log(users);
   const [showActions, setShowActions] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
@@ -133,6 +133,7 @@ const UsersList = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+  
 
   const getStatusBadge = (isOnline) => {
     return isOnline 

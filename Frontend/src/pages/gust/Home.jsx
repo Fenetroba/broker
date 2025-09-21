@@ -45,7 +45,7 @@ const Home = ({isAuthenticated ,user}) => {
                          <h2>Local Sellers</h2>
 
                   </div>
-                <div className=" shadow m-2 w-[88%]">
+                <div className="sm:w-[88%]">
                       
                 <Popular_Products/>
                   <New_products/>
