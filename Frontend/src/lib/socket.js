@@ -1,5 +1,4 @@
 import { io } from 'socket.io-client';
-import { store } from '@/store';
 
 // Create a singleton Socket.IO client
 let socket;
@@ -9,7 +8,7 @@ let isConnected = false;
 let connectListeners = [];
 let disconnectListeners = [];
 
-const setupSocketListeners = () => {
+const setupSocketListeners = (getState) => {
   if (!socket) return;
 
   socket.on('connect', () => {
@@ -20,9 +19,13 @@ const setupSocketListeners = () => {
     connectListeners.forEach(callback => callback());
     
     // Re-authenticate if we have a user
-    const { auth } = store.getState();
-    if (auth?.user?._id) {
-      socket.emit('user_online', auth.user._id);
+    try {
+      const state = getState();
+      if (state?.auth?.user?._id) {
+        socket.emit('user_online', state.auth.user._id);
+      }
+    } catch (error) {
+      console.error('Error getting auth state:', error);
     }
   });
 
@@ -52,7 +55,7 @@ const setupSocketListeners = () => {
   });
 };
 
-export function getSocket() {
+export function getSocket(getState) {
   if (!socket) {
     socket = io('http://localhost:5000', {
       withCredentials: true,
@@ -65,7 +68,11 @@ export function getSocket() {
       timeout: 20000,
     });
     
-    setupSocketListeners();
+    if (getState && typeof getState === 'function') {
+      setupSocketListeners(getState);
+    } else {
+      console.warn('getState function not provided to getSocket');
+    }
   }
   
   return socket;

@@ -1,16 +1,9 @@
-import { EllipsisVertical, Paperclip, Send, Circle } from "lucide-react";
+import { EllipsisVertical, Paperclip, Send } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-  fetchRecentChats, 
-  fetchDirectMessages, 
-  sendDirectMessage, 
-  addMessage, 
-  updateUserStatus,
-  initializeSocketListeners
-} from "@/store/chatSlice";
-import { notifyUserOnline } from "@/lib/socket";
-import { formatMessageTime, formatLastSeen } from "@/lib/utils";
+import { fetchRecentChats, fetchDirectMessages, sendDirectMessage, addMessage } from "../../store/chatSlice";
+import getSocket from "@/lib/socket";
+import { formatMessageTime } from "@/lib/utils";
 
 const MainChat = ({ messages: propMessages = [] }) => {
   const dispatch = useDispatch();
