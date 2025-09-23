@@ -14,6 +14,8 @@ import {
   SidebarMenuItem,
 
 } from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import Chat_ from "@/pages/AllUser_Profile/Notification/chat_";
 
 
 // Menu items.
@@ -56,6 +58,11 @@ const Header = ({isAuthenticated ,user}) => {
     if (!email) return '';
     return email.length > 10 ? email.substring(0, 10) + '...' : email;
   };
+  console.log(user.profilePic)
+  useEffect(() => {
+      
+      console.log(user)
+  }, []);
 
   return (
     <Sidebar >
@@ -71,7 +78,9 @@ const Header = ({isAuthenticated ,user}) => {
                       <item.icon  /> 
                       <span className="flex ">{item.title} {
                         item.title==="Inbox"&& <div>
-                           <p className="absolute right-10 bg-green-500 px-1.5 mb-10 rounded-full ">0</p>
+                           <p className="absolute right-10 flex item-center px-1.5 mb-10 rounded-full ">
+                            <Chat_/>
+                           </p>
                         </div>
                       } </span>
                     </Link>
@@ -85,7 +94,7 @@ const Header = ({isAuthenticated ,user}) => {
         <div className="absolute w-full bottom-0 bg-[var(--two5m)] flex items-center justify-around rounded-t-2xl p-4">
       
          
-         <img className="w-20 h-20 bg-amber-100 rounded-full" src={user?.profilePic || ''} alt= {user?.name.charAt(0)}/>
+         <img className=" f w-20 h-20 text-center bg-amber-100 rounded-full" src={user?.profilePic || ''} alt= {user?.name.charAt(0)}/>
    
          <div className="text-[14px]">
           <p><strong>Name</strong> : {user?.name || 'N/A'}</p>

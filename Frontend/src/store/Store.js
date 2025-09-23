@@ -5,6 +5,7 @@ import products from './ProductSlice';
 import orders from './OrderSlice';
 import users from './UsersSlice';
 import promotions from './PromotionSlice';
+import notifications from './notificationSlice';
 import { getSocket } from '@/lib/socket';
 
 export const store = configureStore({
@@ -14,7 +15,8 @@ export const store = configureStore({
     products: products,
     users: users,
     orders: orders,
-    promotions: promotions
+    promotions: promotions,
+    notifications: notifications
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

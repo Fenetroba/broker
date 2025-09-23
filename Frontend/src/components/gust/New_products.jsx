@@ -16,7 +16,7 @@ const New_products = () => {
 
   // Fetch new products (last 48 hours) 
   const { NewPoducts, LoadingNewPoduct } = useSelector(state => state.products);
-  console.log('New Products:', NewPoducts);
+ 
   
   useEffect(() => {
     dispatch(fetchNewProducts());

@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 const items = [
   {
     title: "Home",
-    url: "/city_shop/home",
+    url: "/",
     icon: Home,
   },
   {

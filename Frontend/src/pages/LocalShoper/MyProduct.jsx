@@ -33,8 +33,8 @@ const MyProduct = () => {
   }, [isHovering, images.length]);
 
   return (
-    <section className="p-3 sm:p-6">
-      <div className="shadow rounded-2xl bg-gradient-to-br from-[var(--two5m)]/70 to-[var(--two3m)]/70 ring-1 ring-black/5">
+    <section className="p-3 sm:p-6 bg-gradient-to-br from-[var(--two5m)]/70 to-[var(--two3m)]/70 ">
+      <div className=" rounded-2xl ring-1 ring-black/5 h-[95vh]">
         <div className="px-3 pt-3">
           <Popover>
             <PopoverTrigger className="flex items-center justify-center rounded-xl cursor-pointer bg-[var(--two2m)] text-[var(--two5m)] font-semibold text-center px-4 py-2 w-full sm:w-[40%] shadow-sm hover:shadow">
@@ -55,7 +55,7 @@ const MyProduct = () => {
         <div className="sm:flex sm:space-x-6 max-sm:space-y-6 items-stretch sm:m-8 m-4">
           {/* Slider */}
           <div
-            className="relative sm:w-[55%] w-full h-[46vh] sm:h-[60vh] overflow-hidden rounded-3xl bg-black/10 backdrop-blur"
+            className="relative sm:w-[55%] w-full h-[100vh] sm:h-[60vh] overflow-hidden rounded-3xl bg-black/10 backdrop-blur"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >

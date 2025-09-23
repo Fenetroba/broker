@@ -34,26 +34,29 @@ const Products = () => {
   // Filter liked products
   const likedProducts = products.filter(product => product?.isLiked) || [];
   
-  if (loading) {
+ if (loading) {
     return (
-      <div className="flex flex-col space-y-3 ">
-      <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-    
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-[250px]" />
-        <Skeleton className="h-4 w-[200px]" />
+      <div className=" mx-auto p-4 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className=" rounded-lg p-4">
+            <div className="flex flex-col space-y-3">
+   
+        <Skeleton className="h-40 w-[100%] shadow-lg bg-green-50 rounded-2xl" />
+     <div className="flex items-center gap-2">
+         <Skeleton className="h-4 w-[90%] shadow-lg rounded-2xl bg-green-50" />
+        <p className="w-10 h-10 rounded-full shadow-sm"></p>
+     </div>
+     
+    </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>      
     );
   }
   
-  // if (error) {
-  //   return (
-  //     <div className="p-8 text-red-500 text-center">
-  //       {error}
-  //     </div>
-  //   );
-  // }
+  
 
   const handleProductClick = (id) => {
     setSelectedProductId(id);

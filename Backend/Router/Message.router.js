@@ -2,6 +2,7 @@ import express from 'express';
 import { protectRoute } from '../middleware/Auth_user.Middleware.js';
 import {
   createMessage,
+  DeletingSingleMessage,
   getDirectMessages,
   getRecentChats,
  
@@ -20,5 +21,6 @@ router.get('/messages/search', protectRoute, searchMessages); // Search messages
 
 // Chat list route
 router.get('/chats', protectRoute, getRecentChats); // Get recent chats for the user
+router.delete('/delete/:id', protectRoute, DeletingSingleMessage); // Delete a single message by ID
 
 export default router;

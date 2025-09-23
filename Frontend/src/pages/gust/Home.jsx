@@ -17,8 +17,10 @@ import {
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 import React from "react";
+import { useSelector } from "react-redux";
 
 const Home = ({isAuthenticated ,user}) => {
+
   return (
     <div>
       <div className="">
@@ -40,9 +42,12 @@ const Home = ({isAuthenticated ,user}) => {
        
            
        
-                  <div className="sm:flex m-4">
-                    <div className="shadow-sm  p-5">
+                  <div className="sm:flex m-4 mt-20">
+                    <div className="shadow-sm rounded-2xl w-[20%] p-4">
                          <h2>Local Sellers</h2>
+
+                         
+
 
                   </div>
                 <div className="sm:w-[88%]">

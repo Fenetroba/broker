@@ -299,3 +299,27 @@ export const searchMessages = async (req, res) => {
     });
   }
 };
+
+export const DeletingSingleMessage=async(req,res)=>{
+const {id}=req.params;
+try {
+  const message=await Message.findByIdAndDelete(id);
+   if (!message) {
+     return res.status(404).json({
+       success: false,
+       message: 'Message not found'
+     });
+   }
+   res.status(200).json({
+     success: true,
+     message: 'Message deleted successfully'
+   });
+}catch (error) {
+  console.error('Error deleting message:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+
+}}

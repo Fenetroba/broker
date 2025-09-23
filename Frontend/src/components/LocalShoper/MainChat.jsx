@@ -1,10 +1,21 @@
 import { EllipsisVertical, Paperclip, Send } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRecentChats, fetchDirectMessages, sendDirectMessage, addMessage } from "../../store/chatSlice";
+import {
+  fetchRecentChats,
+  fetchDirectMessages,
+  sendDirectMessage,
+  addMessage,
+  DeleteSingleMessage,
+} from "../../store/chatSlice";
 import getSocket from "@/lib/socket";
 import { formatMessageTime } from "@/lib/utils";
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "../ui/button";
 const MainChat = ({ messages: propMessages = [] }) => {
   const dispatch = useDispatch();
   const authUser = useSelector((s) => s.auth?.user || null);
@@ -15,14 +26,21 @@ const MainChat = ({ messages: propMessages = [] }) => {
   const chatMessages = useSelector((s) => s.chat?.messages || []);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef(null);
-
+  
+  //deleting the chat
+   const MessageDeleteHandler = (MessageId) => {
+   
+    dispatch(DeleteSingleMessage(MessageId));
+  };
   // Fetch conversations on mount
   useEffect(() => {
     dispatch(fetchRecentChats());
-  }, [dispatch]);
+  }, []);
 
   // Fetch messages when a user is selected
+
   useEffect(() => {
+   
     if (selectedFriendId) {
       dispatch(fetchDirectMessages(selectedFriendId));
     }
@@ -64,7 +82,8 @@ const MainChat = ({ messages: propMessages = [] }) => {
     const handleDirectMessage = (msg) => {
       try {
         const senderId = msg?.sender?._id || msg?.sender?.id || msg?.sender;
-        const receiverId = msg?.receiver?._id || msg?.receiver?.id || msg?.receiver;
+        const receiverId =
+          msg?.receiver?._id || msg?.receiver?.id || msg?.receiver;
 
         // If current chat is with the sender (incoming) or with the receiver (if server echoes), add to view
         const inCurrentChat =
@@ -95,8 +114,12 @@ const MainChat = ({ messages: propMessages = [] }) => {
     };
   }, [currentUserId, selectedFriendId, dispatch]);
 
-  const headerInitial = (selectedFriend?.name || selectedFriend?.email || "U")?.slice(0, 1)?.toUpperCase();
+  const headerInitial = (selectedFriend?.name || selectedFriend?.email || "U")
+    ?.slice(0, 1)
+    ?.toUpperCase();
   const isOnline = selectedFriend?.isOnline || false;
+
+ 
 
   return (
     <section className="relative h-full w-full flex flex-col min-h-0">
@@ -126,22 +149,33 @@ const MainChat = ({ messages: propMessages = [] }) => {
               </div>
             </>
           ) : (
-            <div className="text-sm text-gray-600">Select a user to start chatting</div>
+            <div className="text-sm text-gray-600">
+              Select a user to start chatting
+            </div>
           )}
         </div>
         {/* Messages area */}
-        <div ref={messagesContainerRef} className="flex-1 min-h-0 flex flex-col gap-2 p-4 pb-24 overflow-y-auto ">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 min-h-0 flex flex-col gap-2 p-4 pb-24 overflow-y-auto "
+        >
           {chatLoading && (
-            <div className="text-center text-sm text-gray-500 py-4">Loading messages...</div>
+            <div className="text-center text-sm text-gray-500 py-4">
+              Loading messages...
+            </div>
           )}
           {displayMessages.map((m) => {
             const senderId = m?.sender?._id || m?.sender?.id || m?.sender;
             const isSender =
-              currentUserId && senderId && String(senderId) === String(currentUserId);
+              currentUserId &&
+              senderId &&
+              String(senderId) === String(currentUserId);
             return (
               <div
                 key={m?._id || m?.id}
-                className={`flex w-full ${isSender ? "justify-start" : "justify-end"}`}
+                className={`flex w-full ${
+                  isSender ? "justify-start" : "justify-end"
+                }`}
               >
                 <div
                   className={`relative max-w-[90%] rounded-2xl px-3 py-2 text-sm shadow whitespace-pre-wrap break-words ${
@@ -152,16 +186,42 @@ const MainChat = ({ messages: propMessages = [] }) => {
                 >
                   {m?.content || ""}
                   <div className="flex items-center gap-1 absolute right-2 bottom-1">
-                    <span className={`text-[11px] ${isSender ? "text-gray-500" : "text-gray-200"}`}>
+                    <span
+                      className={`text-[11px] ${
+                        isSender ? "text-gray-500" : "text-gray-200"
+                      }`}
+                    >
                       {formatMessageTime(m?.createdAt)}
                     </span>
                     {isSender && (
                       <div className="flex">
-                        <span className={`text-xs ${m?.isRead ? "text-blue-500" : "text-gray-400"}`}>
+                        <span
+                          className={`text-xs ${
+                            m?.isRead ? "text-blue-500" : "text-gray-400"
+                          }`}
+                        >
                           ✓{m?.isRead ? "✓" : ""}
                         </span>
                       </div>
                     )}
+
+                    <span>
+                      <Popover>
+                        <PopoverTrigger>
+                          {" "}
+                          <EllipsisVertical className="cursor-pointer relative r-0 w-3" />
+                        </PopoverTrigger>
+                        <PopoverContent className="border-none text-[var(--two5m)] bg-[var(--two2m)] flex flex-col m-0 p-0 rounded-2xl">
+                          <Button
+                            onClick={()=>MessageDeleteHandler(m._id)}
+                            className="cursor-pointer"
+                          >
+                            Delete
+                          </Button>
+                          <Button className="cursor-pointer">Edit</Button>
+                        </PopoverContent>
+                      </Popover>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -169,7 +229,9 @@ const MainChat = ({ messages: propMessages = [] }) => {
           })}
           {messages.length === 0 && (
             <div className="text-center text-sm text-gray-500 py-8">
-              {selectedFriend ? "No messages yet" : "Pick a user from the list on the left"}
+              {selectedFriend
+                ? "No messages yet"
+                : "Pick a user from the list on the left"}
             </div>
           )}
         </div>
@@ -202,7 +264,9 @@ const MainChat = ({ messages: propMessages = [] }) => {
             }}
             className="bg-white w-full px-4 outline-0 shadow h-10 rounded-md border border-gray-200"
             placeholder={
-              selectedFriend ? "Type a message..." : "Select a user to start chatting"
+              selectedFriend
+                ? "Type a message..."
+                : "Select a user to start chatting"
             }
             disabled={!selectedFriendId}
           />

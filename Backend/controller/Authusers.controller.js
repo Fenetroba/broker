@@ -88,7 +88,8 @@ export const Login = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
+          profilePic:user.profilePic
         }
       });
     } else {
@@ -113,6 +114,7 @@ export const LogOut = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
   try {
+   
     return res.status(200).json({
       success: true,
       message: "Authenticated",

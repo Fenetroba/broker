@@ -46,13 +46,13 @@ export const likeProduct = createAsyncThunk(
   'products/like',
   async (productId, { rejectWithValue }) => {
     try {
-      console.log('Liking product with ID:', productId);
+  
       const response = await axios.put(`/product/like-product/${productId}`, {}, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      console.log('Like response:', response.data);
+   
       if (!response.data) {
         throw new Error('No data received from server');
       }
@@ -181,7 +181,7 @@ const productSlice = createSlice({
       .addCase(fetchNewProducts.fulfilled, (state, action) => {
         state.LoadingNewPoduct = false;
         state.NewPoducts = action.payload;
-        console.log(  state.NewPoducts )
+        
       })
       .addCase(fetchNewProducts.rejected, (state, action) => {
         state.LoadingNewPoduct = false;

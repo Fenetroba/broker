@@ -102,7 +102,7 @@ const Header = ({ isAuthenticated, user }) => {
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+           <Menu className="w-7 h-7" />
         </button>
       </div>
       {/* Mobile Menu Drawer */}
@@ -113,9 +113,9 @@ const Header = ({ isAuthenticated, user }) => {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0  h-full w-full  bg-[var(--two5m)] shadow-2xl z-50 flex flex-col px-6 py-8 md:hidden"
+            className="fixed top-0 left-0  h-full w-[70%]  bg-[var(--two5m)] shadow-2xl z-50 flex flex-col px-6 py-8 md:hidden"
           >
-            <div className="flex items-center justify-center  gap-52 ">
+            <div className="flex ">
               <Link to="/" className="flex items-center">
                 <img
                   src={Logo}

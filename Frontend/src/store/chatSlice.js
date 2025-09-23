@@ -40,6 +40,18 @@ export const fetchDirectMessages = createAsyncThunk(
     }
   }
 );
+export const DeleteSingleMessage = createAsyncThunk(
+  'chat/deleteSingleMessages',
+  async (messageId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/chat/delete/${messageId}`);
+      // return the id so reducer can remove it immediately
+      return messageId;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || 'Failed to delete message');
+    }
+  }
+);
 
 // Send a message to a specific user
 export const sendDirectMessage = createAsyncThunk(
@@ -91,7 +103,7 @@ const chatSlice = createSlice({
     // Clear chat state
     clearChat: (state) => {
       Object.assign(state, initialState);
-    }
+    } 
   }
   ,
   extraReducers: (builder) => {
@@ -109,6 +121,24 @@ const chatSlice = createSlice({
     builder.addCase(fetchRecentChats.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || 'Failed to load recent chats';
+    });
+
+    //delete single message
+    builder.addCase(DeleteSingleMessage.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    
+    builder.addCase(DeleteSingleMessage.fulfilled, (state, action) => {
+      // action.payload is the deleted messageId
+      const deletedId = action.payload;
+      state.messages = state.messages.filter(msg => msg._id !== deletedId);
+      state.loading = false;
+    });
+    
+    builder.addCase(DeleteSingleMessage.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to delete the message';
     });
     
     // Handle fetch direct messages

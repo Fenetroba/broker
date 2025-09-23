@@ -6,9 +6,13 @@ import {
   fetchDirectMessages,
   sendDirectMessage,
   addMessage,
+  DeleteSingleMessage,
 } from "../../store/chatSlice";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { EllipsisVertical } from "lucide-react";
 import getSocket from "@/lib/socket";
 import { formatMessageTime } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 // Simple chat view
 // - Sender (current user) messages on LEFT
@@ -23,7 +27,10 @@ const MainChat = ({ messages: propMessages = [] }) => {
   const chatMessages = useSelector((s) => s.chat?.messages || []);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef(null);
-
+  const MessageDeleteHandler = (MessageId) => {
+   
+    dispatch(DeleteSingleMessage(MessageId));
+  };
   // Fetch conversations on mount
   useEffect(() => {
     dispatch(fetchRecentChats());
@@ -129,7 +136,6 @@ const MainChat = ({ messages: propMessages = [] }) => {
                   {isOnline ? "Online" : "Offline"}
                 </span>
               </div>
-          
             </div>
           </>
         ) : (
@@ -184,6 +190,23 @@ const MainChat = ({ messages: propMessages = [] }) => {
                         ✓{m?.isRead ? "✓" : ""}
                       </span>
                     )}
+                    <span>
+                      <Popover>
+                        <PopoverTrigger>
+                          {" "}
+                          <EllipsisVertical className="cursor-pointer relative r-0 w-3" />
+                        </PopoverTrigger>
+                        <PopoverContent className="border-none text-[var(--two5m)] bg-[var(--two2m)] flex flex-col m-0 p-0 rounded-2xl">
+                          <Button
+                            onClick={() => MessageDeleteHandler(m._id)}
+                            className="cursor-pointer"
+                          >
+                            Delete
+                          </Button>
+                          <Button className="cursor-pointer">Edit</Button>
+                        </PopoverContent>
+                      </Popover>
+                    </span>
                   </div>
                 </div>
               </div>

@@ -216,7 +216,7 @@ const View_details = ({ productId, isOpen, onClose }) => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Price:</span>
                     <span className="font-semibold">
-                      ${currentProduct.price?.toFixed(2) || '0.00'}
+                      {currentProduct.price?.toFixed(2) || '0.00'} Birr
                     </span>
                   </div>
 
