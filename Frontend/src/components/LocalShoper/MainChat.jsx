@@ -185,7 +185,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
                   }`}
                 >
                   {m?.content || ""}
-                  <div className="flex items-center gap-1 absolute right-2 bottom-1">
+                  <div className="flex items-center gap-3 absolute right-2 bottom-1">
                     <span
                       className={`text-[11px] ${
                         isSender ? "text-gray-500" : "text-gray-200"

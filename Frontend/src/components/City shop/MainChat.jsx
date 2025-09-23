@@ -170,18 +170,20 @@ const MainChat = ({ messages: propMessages = [] }) => {
                 }`}
               >
                 <div
-                  className={`relative max-w-[90%] rounded-2xl px-3 py-2 text-sm shadow ${
+                  className={`relative max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow ${
                     isSender
                       ? " bg-white pr-18 text-gray-900 border border-gray-200"
                       : " bg-[var(--two3m)] pr-18 text-white"
                   }`}
                 >
                   {m?.content || ""}
-                  <div className="flex items-center gap-1 absolute right-2 bottom-1">
+                  <div className="flex gap-10 m-0 p-0">
                     <span className="text-[11px] text-gray-500">
                       {formatMessageTime(m?.createdAt)}
                     </span>
-                    {isSender && (
+              <div className="flex items-center gap-3 py-2 absolute right-2 bottom-1">
+                     <p>
+                     {isSender && (
                       <span
                         className={`text-xs ${
                           m?.isRead ? "text-blue-500" : "text-gray-400"
@@ -190,6 +192,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
                         ✓{m?.isRead ? "✓" : ""}
                       </span>
                     )}
+                   </p>
                     <span>
                       <Popover>
                         <PopoverTrigger>
@@ -207,6 +210,7 @@ const MainChat = ({ messages: propMessages = [] }) => {
                         </PopoverContent>
                       </Popover>
                     </span>
+              </div>
                   </div>
                 </div>
               </div>
