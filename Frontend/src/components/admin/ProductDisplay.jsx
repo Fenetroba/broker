@@ -76,8 +76,8 @@ const ProductDisplay = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className=" py-8">
+      <div className="">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create Promotion</h1>
           <p className="text-muted-foreground mt-2">
@@ -85,8 +85,8 @@ const ProductDisplay = () => {
           </p>
         </div>
 
-        <Card className="shadow-lg">
-          <CardHeader className="border-b">
+        <Card className="shadow-lg border-0">
+          <CardHeader className="shadow-sm p-6">
             <CardTitle className="text-xl">Promotion Details</CardTitle>
             <CardDescription>
               Fill in the details for your promotional offer
@@ -102,12 +102,12 @@ const ProductDisplay = () => {
                   onValueChange={handleTabChange}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid  w-full grid-cols-3">
                     {userCategories.map((category) => (
                       <TabsTrigger 
                         key={category.id} 
                         value={category.id}
-                        className="capitalize"
+                        className="capitalize shadow-2xl cursor-pointer"
                       >
                         {category.name}
                       </TabsTrigger>
