@@ -8,6 +8,7 @@ import Chatrouter from './Router/Message.router.js'
 import Telegramrouter from './Router/Telegram.js'
 import Productrouter from './Router/Product.router.js'
 import ProductRatingRouter from './Router/product.rating.router.js'
+import PromotionProductsRouter from './Router/PromotionProducts.router.js'
 import UsersRouter from './Router/Users.router.js'
 import { app, HttpServer } from './Db/socket.io.js';
 
@@ -23,6 +24,7 @@ app.use('/api/chat', Chatrouter)
 app.use('/telegram', Telegramrouter)
 app.use('/api/product', Productrouter)
 app.use('/api/product', ProductRatingRouter)
+app.use('/api/promotion', PromotionProductsRouter)
 app.use('/api/users', UsersRouter)
 HttpServer.listen(PORT,()=>{
      console.log("the server connect with port ",PORT)

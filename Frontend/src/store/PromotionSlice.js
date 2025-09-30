@@ -1,207 +1,136 @@
-import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../lib/Axios';
 
-// Helper function to create form data
-const createFormData = (data) => {
+
+
+// Helper function to handle file upload
+const uploadImage = async (file) => {
   const formData = new FormData();
-  Object.entries(data).forEach(([key, value]) => {
-    if (value == null) return;
-    
-    if (key === 'bannerImage' && value instanceof File) {
-      formData.append('bannerImage', value);
-    } else if (typeof value === 'object') {
-      formData.append(key, JSON.stringify(value));
-    } else {
-      formData.append(key, value);
-    }
+  formData.append('bannerImage', file);
+  
+  const response = await axios.post(`/promotion/upload-image`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    withCredentials: true, // Include credentials if using cookies/sessions
   });
-  return formData;
+  
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to upload image');
+  }
+  
+  // Return the full URL if it's not already a full URL
+  const imageUrl = response.data.imageUrl;
+  return imageUrl.startsWith('http') ? imageUrl : `http://localhost:5000${imageUrl}`;
 };
 
-// Common error handler
-const handleAsyncError = (error) => {
-  return error.response?.data || { message: 'An error occurred' };
-};
-
-// Async thunks with consistent error handling
-const createAsyncThunkWithErrorHandling = (type, apiCall) => 
-  createAsyncThunk(`promotions/${type}`, async (payload, { rejectWithValue }) => {
+// Async thunks
+export const fetchPromotions = createAsyncThunk(
+  'promotions/fetchAll',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await apiCall(payload);
-      return response.data;
+      const response = await axios.get(`/promotion/get-promotions`);
+      return response.data.data; // Assuming the backend returns { success: true, data: [...] }
     } catch (error) {
-      return rejectWithValue(handleAsyncError(error));
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch promotions');
     }
-  });
-
-// Thunks
-export const fetchPromotionalProducts = createAsyncThunkWithErrorHandling(
-  'fetchAll',
-  (params = {}) => {
-    const { status, owner, page = 1, limit = 10 } = params;
-    const query = new URLSearchParams({ page, limit });
-    if (status) query.append('status', status);
-    if (owner) query.append('owner', owner);
-    return axios.get(`/promotional-products?${query}`);
   }
 );
 
-export const createPromotionalProduct = createAsyncThunkWithErrorHandling(
-  'create',
-  (formData) => {
-    const formDataToSend = createFormData(formData);
-    return axios.post('/promotional-products', formDataToSend, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+export const createPromotion = createAsyncThunk(
+     'promotions/create',
+     async (promotionData, { rejectWithValue }) => {
+       try {
+         const formData = new FormData();
+         
+         // Append all form fields
+         Object.keys(promotionData).forEach(key => {
+           if (key === 'bannerImage' && promotionData[key] instanceof File) {
+             formData.append('bannerImage', promotionData[key]);
+           } else if (key === 'startDate' || key === 'endDate') {
+             formData.append(key, new Date(promotionData[key]).toISOString());
+           } else if (promotionData[key] !== undefined) {
+             formData.append(key, promotionData[key]);
+           }
+         });
+   
+         const response = await axios.post(`${API_BASE_URL}/`, formData, {
+           headers: {
+             'Content-Type': 'multipart/form-data',
+           },
+           withCredentials: true,
+         });
+         
+         return response.data.data;
+       } catch (error) {
+         return rejectWithValue(error.response?.data?.message || 'Failed to create promotion');
+       }
+     }
+   );
+
+export const deletePromotion = createAsyncThunk(
+  'promotions/delete',
+  async (promotionId, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/${promotionId}`);
+      return promotionId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete promotion');
+    }
   }
 );
-
-export const updatePromotionalProduct = createAsyncThunkWithErrorHandling(
-  'update',
-  ({ id, ...data }) => {
-    const formDataToSend = createFormData(data);
-    return axios.put(`/promotional-products/${id}`, formDataToSend, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-  }
-);
-
-export const deletePromotionalProduct = createAsyncThunkWithErrorHandling(
-  'delete',
-  (id) => axios.delete(`/promotional-products/${id}`)
-);
-
-export const togglePromotionalProductStatus = createAsyncThunkWithErrorHandling(
-  'toggleStatus',
-  (id) => axios.patch(`/promotional-products/${id}/toggle-status`)
-);
-
-export const fetchPromotionalProductById = createAsyncThunkWithErrorHandling(
-  'fetchById',
-  (id) => axios.get(`/promotional-products/${id}`)
-);
-
-export const fetchPromotionalProductsByOwner = createAsyncThunkWithErrorHandling(
-  'fetchByOwner',
-  (ownerId) => axios.get(`/promotional-products/owner/${ownerId}`)
-);
-
-export const fetchPromotionalProductsByProduct = createAsyncThunkWithErrorHandling(
-  'fetchByProduct',
-  (productId) => axios.get(`/promotional-products/product/${productId}`)
-);
-
-// Initial state
-const initialState = {
-  entities: {},
-  ids: [],
-  currentId: null,
-  status: 'idle',
-  error: null,
-  filters: {
-    status: null,
-    owner: null,
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 1
-  }
-};
 
 // Slice
 const promotionSlice = createSlice({
   name: 'promotions',
-  initialState,
+  initialState: {
+    items: [],
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    error: null,
+  },
   reducers: {
-    resetStatus: (state) => {
-      state.status = 'idle';
+    clearError: (state) => {
       state.error = null;
     },
-    setCurrentPromotion: (state, { payload }) => {
-      state.currentId = payload;
-    },
-    setFilters: (state, { payload }) => {
-      state.filters = { ...state.filters, ...payload };
-    },
-    clearPromotions: (state) => {
-      state.entities = {};
-      state.ids = [];
-    }
   },
   extraReducers: (builder) => {
-    const addCommonReducers = (thunk, entityKey = 'promotions') => {
-      builder
-        .addCase(thunk.pending, (state) => {
-          state.status = 'loading';
-          state.error = null;
-        })
-        .addCase(thunk.fulfilled, (state, { payload }) => {
-          state.status = 'succeeded';
-          if (Array.isArray(payload)) {
-            payload.forEach(item => {
-              state.entities[item._id] = item;
-              if (!state.ids.includes(item._id)) {
-                state.ids.push(item._id);
-              }
-            });
-          } else if (payload && payload._id) {
-            state.entities[payload._id] = payload;
-            if (!state.ids.includes(payload._id)) {
-              state.ids.push(payload._id);
-            }
-            state.currentId = payload._id;
-          }
-        })
-        .addCase(thunk.rejected, (state, { payload }) => {
-          state.status = 'failed';
-          state.error = payload?.message || 'An error occurred';
-        });
-    };
+    // Fetch Promotions
+    builder.addCase(fetchPromotions.pending, (state) => {
+      state.status = 'loading';
+    });
+    builder.addCase(fetchPromotions.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.items = action.payload;
+    });
+    builder.addCase(fetchPromotions.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    });
 
-    // Apply common reducers to all thunks
-    [
-      fetchPromotionalProducts,
-      createPromotionalProduct,
-      updatePromotionalProduct,
-      deletePromotionalProduct,
-      togglePromotionalProductStatus,
-      fetchPromotionalProductById,
-      fetchPromotionalProductsByOwner,
-      fetchPromotionalProductsByProduct
-    ].forEach(thunk => addCommonReducers(thunk));
-  }
+    // Create Promotion
+    builder.addCase(createPromotion.pending, (state) => {
+      state.status = 'loading';
+    });
+    builder.addCase(createPromotion.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.items.push(action.payload);
+    });
+    builder.addCase(createPromotion.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    });
+
+    // Delete Promotion
+    builder.addCase(deletePromotion.fulfilled, (state, action) => {
+      state.items = state.items.filter(promotion => promotion._id !== action.payload);
+    });
+  },
 });
+
+export const { clearError } = promotionSlice.actions;
+export default promotionSlice.reducer;
 
 // Selectors
-export const selectAllPromotions = (state) => 
-  state.promotions.ids.map(id => state.promotions.entities[id]);
-
-export const selectCurrentPromotion = (state) => 
-  state.promotions.currentId ? state.promotions.entities[state.promotions.currentId] : null;
-
-export const selectPromotionsStatus = (state) => ({
-  status: state.promotions.status,
-  error: state.promotions.error
-});
-
-export const selectPromotionsByProduct = createSelector(
-  [selectAllPromotions, (_, productId) => productId],
-  (promotions, productId) => 
-    promotions.filter(p => p.productId === productId)
-);
-
-export const selectPromotionsByOwner = createSelector(
-  [selectAllPromotions, (_, ownerId) => ownerId],
-  (promotions, ownerId) => 
-    promotions.filter(p => p.owner === ownerId)
-);
-
-// Export actions
-export const { 
-  resetStatus, 
-  setCurrentPromotion, 
-  setFilters, 
-  clearPromotions 
-} = promotionSlice.actions;
-
-export default promotionSlice.reducer;
+export const selectAllPromotions = (state) => state.promotions.items;
+export const selectPromotionStatus = (state) => state.promotions.status;
+export const selectPromotionError = (state) => state.promotions.error;

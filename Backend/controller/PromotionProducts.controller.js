@@ -138,13 +138,13 @@ const getPromotionalProductsByOwner = async (req, res) => {
 // Create new promotional product
 const createPromotionalProduct = async (req, res) => {
   try {
-    const { productId, title, description, altText } = req.body;
+    const { title, description } = req.body;
     
     // Input validation
-    if (!productId) {
+    if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: 'Product ID is required'
+        message: 'Title and description are required'
       });
     }
     

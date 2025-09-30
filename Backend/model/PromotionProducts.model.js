@@ -44,13 +44,7 @@ const promotionProductSchema = new mongoose.Schema({
     default: 'active'
   },
   
-  // Image alt text for accessibility
-  altText: {
-    type: String,
-    trim: true,
-    maxlength: [200, 'Alt text cannot exceed 200 characters'],
-    default: ''
-  }
+
 }, {
   timestamps: true // Adds createdAt and updatedAt
 });
